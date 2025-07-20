@@ -17,24 +17,28 @@ Please contribute your feedback to help improve compatibility.
 
 
 
+
+
+## 🧩 Installation via HACS
+
+This integration is not (yet) available in the official HACS default repository list.  
+However, you can easily add it as a **custom repository**:
+
+1. Open **HACS** in your Home Assistant interface  
+2. Click the **three dots (⋮)** in the top-right corner and select **"Custom repositories"**  
+3. Paste the following URL:  
+   `https://github.com/LouisR-git/duux-fan-local`
+4. Select **"Integration"** as the category  
+5. Click **Add**, then search for `Duux Fan Local` in HACS and install it  
+6. Restart Home Assistant to finalize the setup
+
+The integration will now appear like any standard Home Assistant integration.
+
+
 ## 📋 Overview
 
 Duux fans communicate with the cloud using **MQTT over TLS**.  
 By **spoofing the cloud hostname** and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into **Home Assistant**.
-
-### 🔁 Architecture Summary
-
-```text
-+----------------+         +--------------------------+
-|  Duux Fan      |<------->|  Your Local Mosquitto    |
-| (MQTT over TLS)|         |  on port 443 (TLS)       |
-+----------------+         +-----------+--------------+
-                                     |
-                                     v
-                        Home Assistant MQTT Integration
-```
-
-
 ## 🧰 Prerequisites
 
 You’ll need:
