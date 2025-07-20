@@ -6,13 +6,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import (
-    DOMAIN,
-    ATTR_BATCHA,
-)
+from .const import DOMAIN, MANUFACTURER, MODELS, ATTR_BATCHA
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -21,11 +19,12 @@ async def async_setup_entry(
 ) -> None:
     """Set up Duux Fan binary sensors from a config entry."""
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
-    base_name = config_entry.data["name"]
     device_id = config_entry.data["device_id"]
+    base_name = config_entry.data["name"]
+    model = config_entry.data["model"]
 
     binary_sensors = [
-        DuuxPluggedInBinarySensor(client, device_id, base_name),
+        DuuxPluggedInBinarySensor(client, device_id, base_name, model),
     ]
     async_add_entities(binary_sensors)
 
@@ -37,13 +36,27 @@ class DuuxPluggedInBinarySensor(BinarySensorEntity):
     _attr_device_class = BinarySensorDeviceClass.PLUG
     _attr_icon = "mdi:power-plug"
 
-    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str):
+    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
         """Initialize the binary sensor."""
         self._client = client
+        self._device_id = device_id
+        self._name = base_name
+        self._model = model
+
         self._attr_name = f"{base_name} Plugged In"
         self._attr_unique_id = f"{DOMAIN}_{device_id}_plugged_in"
         self.entity_id = f"binary_sensor.{self._attr_name.lower().replace(' ', '_')}"
         self._attr_is_on = False
+
+    @property
+    def device_info(self) -> dict[str, Any]:
+        """Return device information for grouping in Home Assistant."""
+        return {
+            "identifiers": {(DOMAIN, self._device_id)},
+            "name": self._name,
+            "manufacturer": MANUFACTURER,
+            "model": MODELS.get(self._model),
+        }
 
     @callback
     def _update_state(self, fan_data: dict):

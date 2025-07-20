@@ -2,6 +2,11 @@ DOMAIN = "duux_fan_local"
 
 # Configuration keys
 CONF_DEVICE_ID = "device_id"
+CONF_MODEL = "model"
+MANUFACTURER = "Duux"
+MODELS = {
+    "whisper_flex_2": "Whisper Flex 2",
+}
 
 # MQTT Details
 MQTT_HOST = "collector3.cloudgarden.nl"

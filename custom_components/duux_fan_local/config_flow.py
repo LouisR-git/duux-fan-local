@@ -11,7 +11,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN, CONF_DEVICE_ID, MQTT_HOST, MQTT_PORT, MQTT_TIMEOUT, TOPIC_STATE
+from .const import DOMAIN, CONF_DEVICE_ID, CONF_MODEL, MODELS, MQTT_HOST, MQTT_PORT, MQTT_TIMEOUT, TOPIC_STATE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,8 +59,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
-        """Handle the initial step."""
         errors: dict[str, str] = {}
         
         if user_input is not None:
@@ -80,8 +80,10 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema = vol.Schema(
             {
+                vol.Required(CONF_MODEL): vol.In(MODELS),
                 vol.Required(CONF_NAME, default="Living Room Fan"): str,
                 vol.Required(CONF_DEVICE_ID): str,
+                
             }
         )
 
