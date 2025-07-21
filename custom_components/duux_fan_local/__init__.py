@@ -22,11 +22,10 @@ PLATFORMS: list[Platform] = [
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Duux Fan from a config entry."""
     hass.data.setdefault(DOMAIN, {})
-    
+
     # Create and connect the MQTT client
     client = DuuxMqttClient(hass, entry.data)
-    # The connect call is blocking, so it must be run in an executor
-    await hass.async_add_executor_job(client.connect)
+    await client.async_connect()
 
     hass.data[DOMAIN][entry.entry_id] = client
 

@@ -16,6 +16,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class DuuxMqttClient:
     """Manages a single MQTT connection for a Duux device."""
 
@@ -29,13 +30,17 @@ class DuuxMqttClient:
         self._client = mqtt.Client()
         self._client.on_connect = self.on_connect
         self._client.on_message = self.on_message
-        
-        self._client.tls_set(cert_reqs=ssl.CERT_NONE)
 
-    def connect(self):
-        """Connect to the MQTT broker."""
-        try:
+    async def async_connect(self):
+        """Asynchronously configure TLS and connect to the MQTT broker."""
+        loop = asyncio.get_running_loop()
+
+        def configure_tls_and_connect():
+            self._client.tls_set(cert_reqs=ssl.CERT_NONE)
             self._client.connect(MQTT_HOST, MQTT_PORT, 60)
+
+        try:
+            await loop.run_in_executor(None, configure_tls_and_connect)
             self._client.loop_start()
         except (OSError, ConnectionRefusedError) as err:
             _LOGGER.error("Failed to connect to Duux MQTT broker: %s", err)
@@ -66,13 +71,11 @@ class DuuxMqttClient:
             _LOGGER.debug("Received message on %s: %s", msg.topic, data)
             fan_data = data.get("sub", {}).get("Tune", [{}])[0]
 
-            # Check if parsing resulted in a valid, non-empty dictionary
             if isinstance(fan_data, dict) and fan_data:
                 for update_callback in self._callbacks:
                     self.hass.add_job(update_callback, fan_data)
             else:
                 _LOGGER.debug("Parsed fan_data is empty or not a dict. Skipping update.")
-
         except (json.JSONDecodeError, KeyError, IndexError) as e:
             _LOGGER.warning("Could not parse payload on %s: %s (Error: %s)", msg.topic, msg.payload, e)
 
