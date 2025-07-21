@@ -24,7 +24,7 @@ SWITCH_TYPES = {
         "command_off": "tune set lock 0",
         "state_key": ATTR_CHILD_LOCK,
         "icon": "mdi:account-lock",
-        "entity_category": EntityCategory.CONFIG,
+        "entity_category": None,
     },
 }
 

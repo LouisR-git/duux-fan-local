@@ -85,7 +85,7 @@ class DuuxTimerNumber(DuuxBaseNumber):
     _attr_mode = NumberMode.SLIDER
     _attr_native_unit_of_measurement = UnitOfTime.HOURS
     _attr_icon = "mdi:timer-outline"
-    _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_category = None
 
     def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
         super().__init__(client, device_id, base_name, model)
