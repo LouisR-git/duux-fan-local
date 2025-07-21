@@ -17,8 +17,6 @@ Please contribute your feedback to help improve compatibility.
 
 
 
-
-
 ## 🧩 Installation via HACS
 
 This integration is not (yet) available in the official HACS default repository list.  
@@ -34,34 +32,45 @@ However, you can easily add it as a **custom repository**:
 
 The integration will now appear like any standard Home Assistant integration.
 
+### Initial setup
+1. Follow the instructions below to install the required prerequisites:  
+   - ✅ **MQTT Broker** (e.g., Mosquitto)
+   - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
+2. In Home Assistant, go to **Settings > Devices & Services > Add Integration** and search for **Duux Fan Local**.
+3. Select your fan model from the list.
+4. Give your device a friendly name.
+5. Enter the **MAC address** of your Duux fan  
+   > 💡 You can find it in your router’s connected devices list.
+6. Click **Submit** and enjoy local control of your fan!
 
-## 📋 Overview
 
+## 🧰 Prerequisites
 Duux fans communicate with the cloud using **MQTT over TLS**.  
 By **spoofing the cloud hostname** and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into **Home Assistant**.
-## 🧰 Prerequisites
 
 You’ll need:
 
-- 🧠 **Control over your local DNS resolution** (AdGuard, CoreDNS, dnsmasq…)
-- 📡 **A self-hosted MQTT broker**, reachable as `collector3.cloudgarden.nl` on port 443
-- 🛠️ Basic Linux CLI knowledge
+- **Control over your local DNS resolution** (AdGuard, CoreDNS, dnsmasq…)
+- **A self-hosted MQTT broker**, reachable as `collector3.cloudgarden.nl` on port 443
+- Basic Linux CLI knowledge
 
 
 ## ⚙️ Setting Up the Local MQTT Broker
+ 
+Any Linux host will work. Below is an example using a **Proxmox LXC container**.  
 
-### 🔧 Mosquitto Setup (Port 443 + TLS)
+💡 Other solutions exist, such as setting up **port forwarding (DNAT)** to an existing MQTT broker...
 
-Any Linux host will work. Below is an example using a **Proxmox LXC container**.
+### LXC Mosquitto Setup (Port 443 + TLS)
 
-#### 1. 🧪 Create the container
+#### 1. Create the container
 
 You can use this helper script (optional but easy):  
 👉 https://community-scripts.github.io/ProxmoxVE/scripts?id=mqtt
 
 > ✅ No need for a privileged container.
 
-#### 2. 🛡️ Mosquitto TLS Configuration
+#### 2. Mosquitto TLS Configuration
 
 Edit `/etc/mosquitto/mosquitto.conf`:
 
@@ -90,7 +99,7 @@ require_certificate false
 tls_version tlsv1.2
 ```
 
-#### 3. 🔐 Create Self-Signed Certificates
+#### 3. Create Self-Signed Certificates
 
 ```bash
 mkdir -p /etc/mosquitto/certs/
@@ -111,7 +120,7 @@ Then sign it:
 openssl x509 -req -in collector3.cloudgarden.csr -signkey mosquitto.key -out mosquitto.crt -days 3650
 ```
 
-#### 4. 🚀 Restart the broker
+#### 4. Restart the broker
 
 ```bash
 service mosquitto restart
@@ -137,7 +146,7 @@ Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
 
 ## 🔄 Reboot the Fan
 
-To apply changes and reconnect:
+To apply DNS changes :
 
 - Unplug the fan
 - Remove the battery
@@ -151,12 +160,12 @@ It should now connect to your **local MQTT broker on port 443** using TLS.
 
 The fan uses MQTT topics to report its state and receive commands.
 
-### 🔧 Endpoint MQTT Broker:
+### MQTT Broker Endpoint
 ```
 mqtts://collector3.cloudgarden.nl:443
 ```
 
-### 📤 Fan publishes to:
+### Fan publishes to:
 
 | Topic                         | Example Payload                                                                 |
 |-------------------------------|----------------------------------------------------------------------------------|
@@ -164,7 +173,7 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/online`   | `{"online":true,"connectionType":"mqtt"}`                                       |
 | `sensor/{device_id}/update`   | `{"pid":"xyz","tune":"DUUX Whisper Flex 2"}`                                    |
 
-### 📥 Fan subscribes to:
+### Fan subscribes to:
 
 | Topic                          | Example Payload             |
 |--------------------------------|-----------------------------|
@@ -172,7 +181,7 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/config`    | _(Unused)_                  |
 | `sensor/{device_id}/fw`        | _(Unused)_                  |
 
-### 📤 Commands
+### Commands
 
 | Feature              | Payload             |  X=                                     |
 |----------------------|---------------------|-----------------------------------------|
@@ -190,7 +199,6 @@ mqtts://collector3.cloudgarden.nl:443
 ## ✅ Result
 
 Your Duux fan is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
-
 Enjoy full privacy, instant response times, and true independence from proprietary services.
 
 
@@ -201,6 +209,7 @@ For educational and interoperability purposes only.
 
 
 ## 🙌 Credits
+
 Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.  
 A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic](https://community.home-assistant.io/t/experience-integrating-duux-products/386403/154) which greatly helped this integration.  
 Contributions welcome! 🛠️
