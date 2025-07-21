@@ -70,6 +70,7 @@ class DuuxBaseSelect(SelectEntity):
             "name": self._name,
             "manufacturer": MANUFACTURER,
             "model": MODELS.get(self._model),
+            "connections": {("mac", self._device_id)},
         }
 
     async def _async_publish(self, payload: str) -> None:

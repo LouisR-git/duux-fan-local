@@ -74,6 +74,7 @@ class DuuxBatteryLevelSensor(SensorEntity):
             "name": self._name,
             "manufacturer": MANUFACTURER,
             "model": MODELS.get(self._model),
+            "connections": {("mac", self._device_id)},
         }
 
     @callback

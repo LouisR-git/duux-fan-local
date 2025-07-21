@@ -28,7 +28,6 @@ SWITCH_TYPES = {
     },
 }
 
-
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -85,6 +84,7 @@ class DuuxSwitch(SwitchEntity):
             "name": self._name,
             "manufacturer": MANUFACTURER,
             "model": MODELS.get(self._model),
+            "connections": {("mac", self._device_id)},
         }
 
     async def async_turn_on(self, **kwargs: Any) -> None:
