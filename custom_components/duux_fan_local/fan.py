@@ -94,16 +94,9 @@ class DuuxFan(FanEntity):
         """Return the current speed percentage."""
         return ranged_value_to_percentage(SPEED_RANGE, self._speed)
 
-    async def async_turn_on(
-        self,
-        percentage: int | None = None,
-        **kwargs: Any,
-    ) -> None:
+    async def async_turn_on(self, *args, **kwargs) -> None:
         """Turn the fan on."""
         await self._async_publish("tune set power 1")
-
-        if percentage is not None:
-            await self.async_set_percentage(percentage)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the fan off."""
@@ -114,10 +107,8 @@ class DuuxFan(FanEntity):
         if percentage == 0:
             await self.async_turn_off()
             return
-
         if not self._attr_is_on:
-            await self.async_turn_on()
-
+            await self._async_publish("tune set power 1")
         speed = round(percentage_to_ranged_value(SPEED_RANGE, percentage))
         await self._async_publish(f"tune set speed {speed}")
 
