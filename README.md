@@ -43,6 +43,13 @@ The integration will now appear like any standard Home Assistant integration.
    > 💡 You can find it in your router’s connected devices list.
 6. Click **Submit** and enjoy local control of your fan!
 
+### Screenshots
+
+![config_flow](docs/screenshots/config_flow.png)
+![controls](docs/screenshots/controls.png)
+![sensors](docs/screenshots/sensors.png)
+
+
 
 ## 🧰 Prerequisites
 Duux fans communicate with the cloud using **MQTT over TLS**.  
