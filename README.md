@@ -178,7 +178,7 @@ mqtts://collector3.cloudgarden.nl:443
 |----------------------|---------------------|-----------------------------------------|
 | **Power**            | `tune set power X`  | `0`: off, `1`: on                       |
 | **Mode**             | `tune set mode X`   | `0`: fan mode, `1`: natural wind        |
-| **Speed**            | `tune set speed X`  | `1` to `15`                             |
+| **Speed**            | `tune set speed X`  | `1` to `30`                             |
 | **Timer**            | `tune set timer X`  | `0` to `12` hours                       |
 | **Horizontal Osc.**  | `tune set horosc X` | `0`: stop, `1`: 30°, `2`: 60°, `3`: 90° |
 | **Vertical Osc.**    | `tune set verosc X` | `0`: stop, `1`: 45°, `2`: 100°          |
@@ -201,6 +201,6 @@ For educational and interoperability purposes only.
 
 
 ## 🙌 Credits
-
 Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.  
+A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic](https://community.home-assistant.io/t/experience-integrating-duux-products/386403/154) which greatly helped this integration.  
 Contributions welcome! 🛠️
