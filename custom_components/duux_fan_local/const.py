@@ -2,7 +2,7 @@ DOMAIN = "duux_fan_local"
 
 # Configuration keys
 CONF_DEVICE_ID = "device_id"
-CONF_MODEL = "model"
+CONF_MODEL = "Model"
 MANUFACTURER = "Duux"
 MODELS = {
     "whisper_flex_2": "Whisper Flex 2",
