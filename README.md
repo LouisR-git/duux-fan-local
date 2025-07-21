@@ -151,7 +151,7 @@ It should now connect to your **local MQTT broker on port 443** using TLS.
 
 The fan uses MQTT topics to report its state and receive commands.
 
-### 🔧 MQTT Broker:
+### 🔧 Endpoint MQTT Broker:
 ```
 mqtts://collector3.cloudgarden.nl:443
 ```
@@ -171,6 +171,19 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/command`   | `tune set speed 10`         |
 | `sensor/{device_id}/config`    | _(Unused)_                  |
 | `sensor/{device_id}/fw`        | _(Unused)_                  |
+
+### 📤 Commands
+
+| Feature              | Payload             |  X=                                     |
+|----------------------|---------------------|-----------------------------------------|
+| **Power**            | `tune set power X`  | `0`: off, `1`: on                       |
+| **Mode**             | `tune set mode X`   | `0`: fan mode, `1`: natural wind        |
+| **Speed**            | `tune set speed X`  | `1` to `15`                             |
+| **Timer**            | `tune set timer X`  | `0` to `12` hours                       |
+| **Horizontal Osc.**  | `tune set horosc X` | `0`: stop, `1`: 30°, `2`: 60°, `3`: 90° |
+| **Vertical Osc.**    | `tune set verosc X` | `0`: stop, `1`: 45°, `2`: 100°          |
+| **Night Mode**       | `tune set night X`  | `0`: off, `1`: on                       |
+| **Child Lock**       | `tune set lock X`   | `0`: off, `1`: on                       |
 
 
 
