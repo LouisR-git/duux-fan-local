@@ -24,17 +24,17 @@ async def async_setup_entry(
     model = config_entry.data["model"]
 
     binary_sensors = [
-        DuuxPluggedInBinarySensor(client, device_id, base_name, model),
+        DuuxChargingBinarySensor(client, device_id, base_name, model),
     ]
     async_add_entities(binary_sensors)
 
 
-class DuuxPluggedInBinarySensor(BinarySensorEntity):
-    """Representation of a Duux Fan Plugged In status binary sensor."""
+class DuuxChargingBinarySensor(BinarySensorEntity):
+    """Representation of a Duux Fan Battery Charging status binary sensor."""
 
     _attr_should_poll = False
-    _attr_device_class = BinarySensorDeviceClass.PLUG
-    _attr_icon = "mdi:power-plug"
+    _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
+    _attr_icon = "mdi:battery-charging"
 
     def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
         """Initialize the binary sensor."""
@@ -43,8 +43,8 @@ class DuuxPluggedInBinarySensor(BinarySensorEntity):
         self._name = base_name
         self._model = model
 
-        self._attr_name = f"{base_name} Plugged In"
-        self._attr_unique_id = f"{DOMAIN}_{device_id}_plugged_in"
+        self._attr_name = f"{base_name} Charging"
+        self._attr_unique_id = f"{DOMAIN}_{device_id}_charging"
         self.entity_id = f"binary_sensor.{self._attr_name.lower().replace(' ', '_')}"
         self._attr_is_on = False
 
