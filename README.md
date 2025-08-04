@@ -47,6 +47,7 @@ The integration will now appear like any standard Home Assistant integration.
 
 ![config_flow](docs/screenshots/config_flow.png)
 ![controls](docs/screenshots/controls.png)
+![fan](docs/screenshots/fan.png)
 ![sensors](docs/screenshots/sensors.png)
 
 
