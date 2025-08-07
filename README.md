@@ -2,7 +2,7 @@
 
 **Take back control of your Duux fan - locally, privately, and cloud-free.**
 
-This project allows you to use your **Duux Whisper Flex smart fan** entirely outside of Duux’s cloud ecosystem by redirecting its MQTT communication to a **local broker** , giving you full local control via **Home Assistant**.
+This project allows you to use your **Duux Whisper Flex smart fan** entirely outside of Duux’s cloud ecosystem by redirecting its MQTT communication to a **local broker**, giving you **full local control** via **Home Assistant**.
 
 No cloud. No account. No lag.
 
@@ -51,10 +51,10 @@ The integration will now appear like any standard Home Assistant integration.
 
 ### Initial setup
 
-1. Follow the instructions below to install the required prerequisites:
-   - ✅ **MQTT Broker** (e.g., Mosquitto)
+1. Follow the **instructions below** to install the required prerequisites:  
+   - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
    - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
-2. In Home Assistant, go to **Settings > Devices & Services > Add Integration** and search for **Duux Fan Local**.
+2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
 3. Select your fan model from the list.
 4. Give your device a friendly name.
 5. Enter the **MAC address** of your Duux fan
@@ -70,8 +70,9 @@ The integration will now appear like any standard Home Assistant integration.
 
 ## 🧰 Prerequisites
 
-Duux fans communicate with the cloud using **MQTT over TLS**.
-By **spoofing the cloud hostname** and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into **Home Assistant**.
+Duux fans communicate with the cloud using **MQTT over TLS**.  
+By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into Home Assistant.
+>>>>>>> main
 
 You’ll need:
 
@@ -83,8 +84,6 @@ You’ll need:
 ## ⚙️ Setting Up the Local MQTT Broker
 
 Any Linux host will work. Below is an example using a **Proxmox LXC container**.
-
-💡 Other solutions exist, such as setting up **port forwarding (DNAT)** to an existing MQTT broker...
 
 ### LXC Mosquitto Setup (Port 443 + TLS)
 
@@ -103,7 +102,7 @@ Edit `/etc/mosquitto/mosquitto.conf`:
 user root  # Required to bind to port 443
 ```
 
-⚠️ **Warning**: Running as root is not recommended. Use it only in isolated environments.
+> ⚠️ **Warning:** Running Mosquitto as `root` is not recommended. Use this approach only in isolated or controlled environments. Alternatively, you can use `iptables` to forward connections to a non-root MQTT listener port or set up `port forwarding (DNAT)` on your router to redirect traffic to a MQTT broker ...
 
 Then remove the default config:
 
@@ -134,7 +133,7 @@ openssl genrsa -out mosquitto.key 2048
 openssl req -new -key mosquitto.key -out collector3.cloudgarden.csr
 ```
 
-📌 When prompted, set the **Common Name** (CN) to:
+When prompted, set the **Common Name** (CN) to:
 ```
 collector3.cloudgarden.nl
 ```
@@ -160,7 +159,7 @@ Redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
 Go to AdGuard → Settings → DNS Rewrites:
 
 ```
-collector3.cloudgarden.nl → 192.168.x.x  # Your Mosquitto IP
+collector3.cloudgarden.nl → 192.168.x.x  # Your MQTT broker IP
 ```
 
 Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
