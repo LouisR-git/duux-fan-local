@@ -23,7 +23,7 @@ class DuuxMqttClient:
     def __init__(self, hass: HomeAssistant, config: dict):
         """Initialize the client."""
         self.hass = hass
-        self.device_id = config[CONF_DEVICE_ID]
+        self.device_id = config[CONF_DEVICE_ID].lower()  # Ensure MAC address is lowercase
         self.command_topic = TOPIC_COMMAND.format(device_id=self.device_id)
         self.state_topic = TOPIC_STATE.format(device_id=self.device_id)
         self._callbacks = []

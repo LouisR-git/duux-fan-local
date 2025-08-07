@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS, ATTR_NIGHT_MODE, ATTR_CHILD_LOCK
+from .const import DOMAIN, MANUFACTURER, MODELS, MODEL_V1, ATTR_NIGHT_MODE, ATTR_CHILD_LOCK, ATTR_HOR_OSC, ATTR_VER_OSC, ATTR_SWING, ATTR_TILT
 from .mqtt import DuuxMqttClient
 
 SWITCH_TYPES = {
@@ -26,6 +26,24 @@ SWITCH_TYPES = {
         "icon": "mdi:account-lock",
         "entity_category": None,
     },
+    "horizontal_oscillation_v1": {
+        "name": "Horizontal Oscillation",
+        "command_on": "tune set swing 1",
+        "command_off": "tune set swing 0",
+        "state_key": ATTR_SWING,
+        "icon": "mdi:arrow-left-right",
+        "entity_category": None,
+        "model_specific": MODEL_V1,
+    },
+    "vertical_oscillation_v1": {
+        "name": "Vertical Oscillation",
+        "command_on": "tune set tilt 1",
+        "command_off": "tune set tilt 0",
+        "state_key": ATTR_TILT,
+        "icon": "mdi:arrow-up-down",
+        "entity_category": None,
+        "model_specific": MODEL_V1,
+    },
 }
 
 async def async_setup_entry(
@@ -39,10 +57,24 @@ async def async_setup_entry(
     base_name = config_entry.data["name"]
     model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
 
-    switches = [
-        DuuxSwitch(client, device_id, base_name, model, switch_type, details)
-        for switch_type, details in SWITCH_TYPES.items()
-    ]
+    switches = []
+
+    # Only add switches that are supported by the model
+    for switch_type, details in SWITCH_TYPES.items():
+        # Skip child lock and night mode for V1 fans
+        if model == MODEL_V1 and switch_type in ["child_lock", "night_mode"]:
+            continue
+
+        # Only add V1 specific oscillation switches for V1 model
+        if switch_type in ["horizontal_oscillation_v1", "vertical_oscillation_v1"]:
+            if model != MODEL_V1:
+                continue
+
+        # Only add V2 specific switches for V2 model (none currently, but structure for future)
+        if "model_specific" in details and details["model_specific"] != model:
+            continue
+
+        switches.append(DuuxSwitch(client, device_id, base_name, model, switch_type, details))
 
     async_add_entities(switches)
 

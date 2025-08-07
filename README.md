@@ -20,14 +20,16 @@ The integration automatically adapts to your fan's capabilities based on the gen
 **Whisper Flex 1 (v1):**
 - Speed range: 0-26
 - Mode options: Normal, Natural, Night
-- Horizontal oscillation: On/Off only (`tune set swing 0|1`)
-- Vertical oscillation: On/Off only (`tune set tilt 0|1`)
+- Horizontal oscillation: On/Off
+- Vertical oscillation: On/Off
 
 **Whisper Flex 2 (v2):**
 - Speed range: 0-30
 - Mode options: Fan, Natural
 - Horizontal oscillation: Off, 30°, 60°, 90°
 - Vertical oscillation: Off, 45°, 100°
+- Child Lock
+- Night Mode: On/Off
 
 Other models may work but are not officially supported.
 Please contribute your feedback to help improve compatibility.

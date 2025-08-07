@@ -9,8 +9,12 @@ from .const import (
     DOMAIN,
     MANUFACTURER,
     MODELS,
+    MODEL_V1,
     ATTR_TIMER,
+    ATTR_SPEED,
     MAX_TIMER,
+    MAX_SPEED_V1,
+    MAX_SPEED_V2,
     ATTR_HOR_OSC,
     ATTR_VER_OSC,
     MAX_HOR_OSC,
@@ -31,7 +35,8 @@ async def async_setup_entry(
     model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
 
     entities = [
-        DuuxTimerNumber(client, device_id, base_name, model)
+        DuuxTimerNumber(client, device_id, base_name, model),
+        DuuxSpeedNumber(client, device_id, base_name, model),
     ]
     async_add_entities(entities)
 
@@ -100,4 +105,37 @@ class DuuxTimerNumber(DuuxBaseNumber):
     @callback
     def _update_state(self, fan_data: dict):
         self._attr_native_value = float(fan_data.get(ATTR_TIMER, 0))
+        self.async_write_ha_state()
+
+
+class DuuxSpeedNumber(DuuxBaseNumber):
+    """Representation of a Duux Fan speed control."""
+
+    _attr_should_poll = False
+    _attr_native_min_value = 1.0
+    _attr_native_step = 1.0
+    _attr_mode = NumberMode.SLIDER
+    _attr_icon = "mdi:speedometer"
+    _attr_entity_category = None
+
+    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
+        super().__init__(client, device_id, base_name, model)
+        self._attr_name = f"{base_name} Speed"
+        self._attr_unique_id = f"{DOMAIN}_{device_id}_speed"
+        self.entity_id = f"number.{self._attr_name.lower().replace(' ', '_')}"
+        self._attr_native_value = 1.0
+
+        # Set max speed based on model
+        if model == MODEL_V1:
+            self._attr_native_max_value = float(MAX_SPEED_V1)
+        else:
+            self._attr_native_max_value = float(MAX_SPEED_V2)
+
+    async def async_set_native_value(self, value: float) -> None:
+        speed_value = int(round(value))
+        await self._async_publish(f"tune set speed {speed_value}")
+
+    @callback
+    def _update_state(self, fan_data: dict):
+        self._attr_native_value = float(fan_data.get(ATTR_SPEED, 0))
         self.async_write_ha_state()

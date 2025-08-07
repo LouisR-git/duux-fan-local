@@ -13,6 +13,8 @@ from .const import (
     ATTR_MODE,
     ATTR_HOR_OSC,
     ATTR_VER_OSC,
+    ATTR_SWING,
+    ATTR_TILT,
     V1_MODE_OPTIONS,
     V2_MODE_OPTIONS,
     V1_HOR_OSC_OPTIONS,
@@ -36,9 +38,15 @@ async def async_setup_entry(
 
     entities = [
         DuuxFanModeSelect(client, device_id, base_name, model),
-        DuuxHorizontalOscillationSelect(client, device_id, base_name, model),
-        DuuxVerticalOscillationSelect(client, device_id, base_name, model),
     ]
+
+    # Only add oscillation select entities for V2 fans
+    # V1 fans use switch entities for oscillation instead
+    if model != MODEL_V1:
+        entities.extend([
+            DuuxHorizontalOscillationSelect(client, device_id, base_name, model),
+            DuuxVerticalOscillationSelect(client, device_id, base_name, model),
+        ])
 
     async_add_entities(entities)
 
@@ -136,7 +144,11 @@ class DuuxHorizontalOscillationSelect(DuuxBaseSelect):
 
     @callback
     def _update_state(self, fan_data: dict[str, Any]) -> None:
-        self._current_value = fan_data.get(ATTR_HOR_OSC, 0)
+        # Use appropriate state key based on model
+        if self._model == MODEL_V1:
+            self._current_value = fan_data.get(ATTR_SWING, 0)
+        else:
+            self._current_value = fan_data.get(ATTR_HOR_OSC, 0)
         self.async_write_ha_state()
 
 
@@ -171,5 +183,10 @@ class DuuxVerticalOscillationSelect(DuuxBaseSelect):
 
     @callback
     def _update_state(self, fan_data: dict[str, Any]) -> None:
-        self._current_value = fan_data.get(ATTR_VER_OSC, 0)
+        # Use appropriate state key based on model
+        if self._model == MODEL_V1:
+            self._current_value = fan_data.get(ATTR_TILT, 0)
+        else:
+            self._current_value = fan_data.get(ATTR_VER_OSC, 0)
+        self.async_write_ha_state()
         self.async_write_ha_state()

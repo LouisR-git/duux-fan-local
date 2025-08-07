@@ -64,6 +64,9 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
+            # Convert MAC address to lowercase
+            user_input[CONF_DEVICE_ID] = user_input[CONF_DEVICE_ID].lower()
+
             await self.async_set_unique_id(user_input[CONF_DEVICE_ID])
             self._abort_if_unique_id_configured()
 
