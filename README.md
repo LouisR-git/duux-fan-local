@@ -4,42 +4,58 @@
 
 This project allows you to use your **Duux Whisper Flex smart fan** entirely outside of Duux’s cloud ecosystem by redirecting its MQTT communication to a **local broker** , giving you full local control via **Home Assistant**.
 
-No cloud. No account. No lag.  
+No cloud. No account. No lag.
 
-## 📌 Supported Model
+## 📌 Supported Models
 
-This integration has been tested and validated on the following model:
+This integration has been tested and validated on the following models:
 
-- **DUUX Whisper Flex 2**
+- **DUUX Whisper Flex 1** (v1 generation)
+- **DUUX Whisper Flex 2** (v2 generation)
 
-Other models may work but are not officially supported.  
+### Model Differences
+
+The integration automatically adapts to your fan's capabilities based on the generation you select:
+
+**Whisper Flex 1 (v1):**
+- Speed range: 0-26
+- Mode options: Normal, Natural, Night
+- Horizontal oscillation: On/Off only (`tune set swing 0|1`)
+- Vertical oscillation: On/Off only (`tune set tilt 0|1`)
+
+**Whisper Flex 2 (v2):**
+- Speed range: 0-30
+- Mode options: Fan, Natural
+- Horizontal oscillation: Off, 30°, 60°, 90°
+- Vertical oscillation: Off, 45°, 100°
+
+Other models may work but are not officially supported.
 Please contribute your feedback to help improve compatibility.
-
-
 
 ## 🧩 Installation via HACS
 
-This integration is not (yet) available in the official HACS default repository list.  
+This integration is not (yet) available in the official HACS default repository list.
 However, you can easily add it as a **custom repository**:
 
-1. Open **HACS** in your Home Assistant interface  
-2. Click the **three dots (⋮)** in the top-right corner and select **"Custom repositories"**  
-3. Paste the following URL:  
+1. Open **HACS** in your Home Assistant interface
+2. Click the **three dots (⋮)** in the top-right corner and select **"Custom repositories"**
+3. Paste the following URL:
    `https://github.com/LouisR-git/duux-fan-local`
-4. Select **"Integration"** as the category  
-5. Click **Add**, then search for `Duux Fan Local` in HACS and install it  
+4. Select **"Integration"** as the category
+5. Click **Add**, then search for `Duux Fan Local` in HACS and install it
 6. Restart Home Assistant to finalize the setup
 
 The integration will now appear like any standard Home Assistant integration.
 
 ### Initial setup
-1. Follow the instructions below to install the required prerequisites:  
+
+1. Follow the instructions below to install the required prerequisites:
    - ✅ **MQTT Broker** (e.g., Mosquitto)
    - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
 2. In Home Assistant, go to **Settings > Devices & Services > Add Integration** and search for **Duux Fan Local**.
 3. Select your fan model from the list.
 4. Give your device a friendly name.
-5. Enter the **MAC address** of your Duux fan  
+5. Enter the **MAC address** of your Duux fan
    > 💡 You can find it in your router’s connected devices list.
 6. Click **Submit** and enjoy local control of your fan!
 
@@ -50,10 +66,9 @@ The integration will now appear like any standard Home Assistant integration.
 ![fan](docs/screenshots/fan.png)
 ![sensors](docs/screenshots/sensors.png)
 
-
-
 ## 🧰 Prerequisites
-Duux fans communicate with the cloud using **MQTT over TLS**.  
+
+Duux fans communicate with the cloud using **MQTT over TLS**.
 By **spoofing the cloud hostname** and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into **Home Assistant**.
 
 You’ll need:
@@ -64,8 +79,8 @@ You’ll need:
 
 
 ## ⚙️ Setting Up the Local MQTT Broker
- 
-Any Linux host will work. Below is an example using a **Proxmox LXC container**.  
+
+Any Linux host will work. Below is an example using a **Proxmox LXC container**.
 
 💡 Other solutions exist, such as setting up **port forwarding (DNAT)** to an existing MQTT broker...
 
@@ -73,7 +88,7 @@ Any Linux host will work. Below is an example using a **Proxmox LXC container**.
 
 #### 1. Create the container
 
-You can use this helper script (optional but easy):  
+You can use this helper script (optional but easy):
 👉 https://community-scripts.github.io/ProxmoxVE/scripts?id=mqtt
 
 > ✅ No need for a privileged container.
@@ -134,8 +149,6 @@ openssl x509 -req -in collector3.cloudgarden.csr -signkey mosquitto.key -out mos
 service mosquitto restart
 ```
 
-
-
 ## 🌐 Local DNS Spoofing
 
 Redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
@@ -150,8 +163,6 @@ collector3.cloudgarden.nl → 192.168.x.x  # Your Mosquitto IP
 
 Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
 
-
-
 ## 🔄 Reboot the Fan
 
 To apply DNS changes :
@@ -162,7 +173,6 @@ To apply DNS changes :
 - Replug
 
 It should now connect to your **local MQTT broker on port 443** using TLS.
-
 
 ## 📡 Explanations
 
@@ -212,12 +222,12 @@ Enjoy full privacy, instant response times, and true independence from proprieta
 
 ## 🛑 Disclaimer
 
-This setup **spoofs a cloud domain** and runs services on privileged ports. Use only in **lab environments** or **isolated networks**.  
+This setup **spoofs a cloud domain** and runs services on privileged ports. Use only in **lab environments** or **isolated networks**.
 For educational and interoperability purposes only.
 
 
 ## 🙌 Credits
 
-Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.  
-A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic](https://community.home-assistant.io/t/experience-integrating-duux-products/386403/154) which greatly helped this integration.  
+Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.
+A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic](https://community.home-assistant.io/t/experience-integrating-duux-products/386403/154) which greatly helped this integration.
 Contributions welcome! 🛠️

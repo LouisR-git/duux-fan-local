@@ -18,9 +18,9 @@ _LOGGER = logging.getLogger(__name__)
 def test_connection(device_id: str) -> bool:
     """Tests the connection to the Duux MQTT broker by listening for a message."""
     import paho.mqtt.client as mqtt
-    
+
     connection_event = threading.Event()
-    
+
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             client.subscribe(TOPIC_STATE.format(device_id=device_id))
@@ -33,9 +33,9 @@ def test_connection(device_id: str) -> bool:
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
-    
+
     client.tls_set(cert_reqs=ssl.CERT_NONE)
-    
+
     try:
         client.connect(MQTT_HOST, MQTT_PORT, 60)
         client.loop_start()
@@ -62,7 +62,7 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         errors: dict[str, str] = {}
-        
+
         if user_input is not None:
             await self.async_set_unique_id(user_input[CONF_DEVICE_ID])
             self._abort_if_unique_id_configured()
@@ -75,7 +75,7 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=user_input[CONF_NAME], data=user_input
                 )
-            
+
             errors["base"] = "cannot_connect"
 
         data_schema = vol.Schema(

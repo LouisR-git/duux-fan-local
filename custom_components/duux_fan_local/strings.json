@@ -5,6 +5,7 @@
         "title": "Add Duux Fan",
         "description": "Enter a name for your fan and its unique Device ID. The Device ID is the MAC address.",
         "data": {
+          "model": "Fan Model",
           "name": "Name",
           "device_id": "Device ID"
         }

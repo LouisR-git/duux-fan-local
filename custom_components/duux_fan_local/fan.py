@@ -16,15 +16,15 @@ from .const import (
     MANUFACTURER,
     MODELS,
     CONF_DEVICE_ID,
+    MODEL_V1,
     ATTR_POWER,
     ATTR_SPEED,
-    MAX_SPEED,
+    MAX_SPEED_V1,
+    MAX_SPEED_V2,
 )
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
-
-SPEED_RANGE = (1, MAX_SPEED)
 
 
 async def async_setup_entry(
@@ -36,7 +36,7 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data["model"]
+    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
 
     fan = [
         DuuxFan(client, device_id, base_name, model),
@@ -68,6 +68,10 @@ class DuuxFan(FanEntity):
         self._attr_is_on = False
         self._speed = 0
 
+        # Set speed range based on model
+        self._max_speed = MAX_SPEED_V1 if model == MODEL_V1 else MAX_SPEED_V2
+        self._speed_range = (1, self._max_speed)
+
         self._attr_supported_features = (
             FanEntityFeature.TURN_ON
             | FanEntityFeature.TURN_OFF
@@ -92,7 +96,7 @@ class DuuxFan(FanEntity):
     @property
     def percentage(self) -> int | None:
         """Return the current speed percentage."""
-        return ranged_value_to_percentage(SPEED_RANGE, self._speed)
+        return ranged_value_to_percentage(self._speed_range, self._speed)
 
     async def async_turn_on(self, *args, **kwargs) -> None:
         """Turn the fan on."""
@@ -109,7 +113,7 @@ class DuuxFan(FanEntity):
             return
         if not self._attr_is_on:
             await self._async_publish("tune set power 1")
-        speed = round(percentage_to_ranged_value(SPEED_RANGE, percentage))
+        speed = round(percentage_to_ranged_value(self._speed_range, percentage))
         await self._async_publish(f"tune set speed {speed}")
 
     async def _async_publish(self, payload: str) -> None:

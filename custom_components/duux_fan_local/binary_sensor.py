@@ -21,7 +21,7 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data["model"]
+    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
 
     binary_sensors = [
         DuuxChargingBinarySensor(client, device_id, base_name, model),
