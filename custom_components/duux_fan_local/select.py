@@ -189,4 +189,3 @@ class DuuxVerticalOscillationSelect(DuuxBaseSelect):
         else:
             self._current_value = fan_data.get(ATTR_VER_OSC, 0)
         self.async_write_ha_state()
-        self.async_write_ha_state()

@@ -19,6 +19,8 @@ from .const import (
     MODEL_V1,
     ATTR_POWER,
     ATTR_SPEED,
+    ATTR_SWING,
+    ATTR_TILT,
     MAX_SPEED_V1,
     MAX_SPEED_V2,
 )
@@ -67,16 +69,25 @@ class DuuxFan(FanEntity):
         self.entity_id = f"fan.{base_name.lower().replace(' ', '_')}"
         self._attr_is_on = False
         self._speed = 0
+        self._oscillating = False
+        self._direction = "forward"  # Default direction
 
         # Set speed range based on model
         self._max_speed = MAX_SPEED_V1 if model == MODEL_V1 else MAX_SPEED_V2
         self._speed_range = (1, self._max_speed)
 
-        self._attr_supported_features = (
+        # Set supported features based on model
+        supported_features = (
             FanEntityFeature.TURN_ON
             | FanEntityFeature.TURN_OFF
             | FanEntityFeature.SET_SPEED
         )
+
+        # V1 fans support simple oscillation and direction
+        if model == MODEL_V1:
+            supported_features |= FanEntityFeature.OSCILLATE | FanEntityFeature.DIRECTION
+
+        self._attr_supported_features = supported_features
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -98,6 +109,16 @@ class DuuxFan(FanEntity):
         """Return the current speed percentage."""
         return ranged_value_to_percentage(self._speed_range, self._speed)
 
+    @property
+    def oscillating(self) -> bool:
+        """Return whether or not the fan is currently oscillating."""
+        return self._oscillating
+
+    @property
+    def current_direction(self) -> str:
+        """Return the current direction of the fan."""
+        return self._direction
+
     async def async_turn_on(self, *args, **kwargs) -> None:
         """Turn the fan on."""
         await self._async_publish("tune set power 1")
@@ -116,6 +137,22 @@ class DuuxFan(FanEntity):
         speed = round(percentage_to_ranged_value(self._speed_range, percentage))
         await self._async_publish(f"tune set speed {speed}")
 
+    async def async_oscillate(self, oscillating: bool) -> None:
+        """Turn oscillation on or off."""
+        if self._model == MODEL_V1:
+            # V1 fans use swing for horizontal oscillation
+            await self._async_publish(f"tune set swing {1 if oscillating else 0}")
+        # V2 fans don't support simple oscillation (they use select entities with angles)
+
+    async def async_set_direction(self, direction: str) -> None:
+        """Set the direction of the fan."""
+        if self._model == MODEL_V1:
+            # V1 fans use tilt for vertical oscillation/direction
+            # Map direction to tilt: forward = off, reverse = on
+            tilt_value = 1 if direction == "reverse" else 0
+            await self._async_publish(f"tune set tilt {tilt_value}")
+        # V2 fans don't support simple direction (they use select entities with angles)
+
     async def _async_publish(self, payload: str) -> None:
         """Publish a command to the MQTT topic."""
         await self.hass.async_add_executor_job(self._client.publish, payload)
@@ -125,6 +162,14 @@ class DuuxFan(FanEntity):
         """Update the entity's state from parsed MQTT data."""
         self._attr_is_on = fan_data.get(ATTR_POWER) == 1
         self._speed = fan_data.get(ATTR_SPEED)
+
+        # Update oscillation and direction state for V1 fans
+        if self._model == MODEL_V1:
+            # Swing represents horizontal oscillation
+            self._oscillating = fan_data.get(ATTR_SWING, 0) == 1
+            # Tilt represents vertical oscillation/direction
+            self._direction = "reverse" if fan_data.get(ATTR_TILT, 0) == 1 else "forward"
+
         self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:
