@@ -23,6 +23,8 @@ Please contribute your feedback to help improve compatibility.
 This integration is not (yet) available in the official HACS default repository list.
 However, you can easily add it as a **custom repository**:
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=duux-fan-local&category=Integration&owner=LouisR-git)
+
 1. Open **HACS** in your Home Assistant interface
 2. Click the **three dots (⋮)** in the top-right corner and select **"Custom repositories"**
 3. Paste the following URL:
@@ -37,7 +39,8 @@ The integration will now appear like any standard Home Assistant integration.
 
 1. Follow the **instructions below** to install the required prerequisites:  
    - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
-   - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
+   - ✅ **DNS redirection** (reroute Duux API calls to your local Broker) 
+
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
 3. Select your fan model from the list.
 4. Give your device a friendly name.
