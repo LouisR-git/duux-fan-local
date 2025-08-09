@@ -10,26 +10,10 @@ No cloud. No account. No lag.
 
 This integration has been tested and validated on the following models:
 
-- **DUUX Whisper Flex 1** (v1 generation)
-- **DUUX Whisper Flex 2** (v2 generation)
+- **Duux Whisper Flex**
+- **Duux Whisper Flex 2**
 
-### Model Differences
-
-The integration automatically adapts to your fan's capabilities based on the generation you select:
-
-**Whisper Flex 1 (v1):**
-- Speed range: 0-26
-- Mode options: Normal, Natural, Night
-- Horizontal oscillation: On/Off
-- Vertical oscillation: On/Off
-
-**Whisper Flex 2 (v2):**
-- Speed range: 0-30
-- Mode options: Fan, Natural
-- Horizontal oscillation: Off, 30°, 60°, 90°
-- Vertical oscillation: Off, 45°, 100°
-- Child Lock
-- Night Mode: On/Off
+The integration automatically adapts to your fan's capabilities based on the selected generation. It supports power, speed, modes, and horizontal/vertical oscillation... See the `Supported Features per Model` section below for details.
 
 Other models may work but are not officially supported.
 Please contribute your feedback to help improve compatibility.
@@ -72,7 +56,6 @@ The integration will now appear like any standard Home Assistant integration.
 
 Duux fans communicate with the cloud using **MQTT over TLS**.  
 By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into Home Assistant.
->>>>>>> main
 
 You’ll need:
 
@@ -164,7 +147,7 @@ collector3.cloudgarden.nl → 192.168.x.x  # Your MQTT broker IP
 
 Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
 
-## 🔄 Reboot the Fan
+### Reboot the Fan
 
 To apply DNS changes :
 
@@ -175,7 +158,35 @@ To apply DNS changes :
 
 It should now connect to your **local MQTT broker on port 443** using TLS.
 
-## 📡 Explanations
+
+## 📋 Supported Features per Model
+
+### Whisper Flex (v1)
+
+| Feature              | Payload            |  X=                                               |
+|----------------------|--------------------|---------------------------------------------------|
+| **Power**            | `tune set power X` | `0`: off, `1`: on                                 |
+| **Mode**             | `tune set mode X`  | `0`: fan mode, `1`: natural wind, `2`: night mode |
+| **Speed**            | `tune set speed X` | `1` to `26`                                       |
+| **Timer**            | `tune set timer X` | `0` to `12` hours                                 |
+| **Horizontal Osc.**  | `tune set swing X` | `0`: off, `1`: on                                 |
+| **Vertical Osc.**    | `tune set tilt X`  | `0`: off, `1`: on                                 |
+
+
+### Whisper Flex 2
+| Feature              | Payload             |  X=                                     |
+|----------------------|---------------------|-----------------------------------------|
+| **Power**            | `tune set power X`  | `0`: off, `1`: on                       |
+| **Mode**             | `tune set mode X`   | `0`: fan mode, `1`: natural wind        |
+| **Speed**            | `tune set speed X`  | `1` to `30`                             |
+| **Timer**            | `tune set timer X`  | `0` to `12` hours                       |
+| **Horizontal Osc.**  | `tune set horosc X` | `0`: off, `1`: 30°, `2`: 60°, `3`: 90°  |
+| **Vertical Osc.**    | `tune set verosc X` | `0`: off, `1`: 45°, `2`: 100°           |
+| **Night Mode**       | `tune set night X`  | `0`: off, `1`: on                       |
+| **Child Lock**       | `tune set lock X`   | `0`: off, `1`: on                       |
+
+
+## 📡 Details
 
 The fan uses MQTT topics to report its state and receive commands.
 
@@ -199,20 +210,6 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/command`   | `tune set speed 10`         |
 | `sensor/{device_id}/config`    | _(Unused)_                  |
 | `sensor/{device_id}/fw`        | _(Unused)_                  |
-
-### Commands
-
-| Feature              | Payload             |  X=                                     |
-|----------------------|---------------------|-----------------------------------------|
-| **Power**            | `tune set power X`  | `0`: off, `1`: on                       |
-| **Mode**             | `tune set mode X`   | `0`: fan mode, `1`: natural wind        |
-| **Speed**            | `tune set speed X`  | `1` to `30`                             |
-| **Timer**            | `tune set timer X`  | `0` to `12` hours                       |
-| **Horizontal Osc.**  | `tune set horosc X` | `0`: stop, `1`: 30°, `2`: 60°, `3`: 90° |
-| **Vertical Osc.**    | `tune set verosc X` | `0`: stop, `1`: 45°, `2`: 100°          |
-| **Night Mode**       | `tune set night X`  | `0`: off, `1`: on                       |
-| **Child Lock**       | `tune set lock X`   | `0`: off, `1`: on                       |
-
 
 
 ## ✅ Result
