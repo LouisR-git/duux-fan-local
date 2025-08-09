@@ -13,7 +13,7 @@ This integration has been tested and validated on the following models:
 - **Duux Whisper Flex**
 - **Duux Whisper Flex 2**
 
-The integration automatically adapts to your fan's capabilities based on the selected generation. It supports power, speed, modes, and horizontal/vertical oscillation... See the `Supported Features per Model` section below for details.
+The integration automatically adapts to your fan's capabilities based on the selected generation. It supports power, speed, modes, and horizontal/vertical oscillation... See the `Supported Features/Models` section below for details.
 
 Other models may work but are not officially supported.
 Please contribute your feedback to help improve compatibility.
@@ -49,7 +49,7 @@ The integration will now appear like any standard Home Assistant integration.
 
 ![config_flow](docs/screenshots/config_flow.png)
 ![controls](docs/screenshots/controls.png)
-![fan](docs/screenshots/fan.png)
+![fan](docs/screenshots/fan_entity.png)
 ![sensors](docs/screenshots/sensors.png)
 
 ## 🧰 Prerequisites
@@ -159,31 +159,41 @@ To apply DNS changes :
 It should now connect to your **local MQTT broker on port 443** using TLS.
 
 
-## 📋 Supported Features per Model
+## 📋 Supported Features/Models
 
-### Whisper Flex (v1)
+### Whisper Flex
 
-| Feature              | Payload            |  X=                                               |
-|----------------------|--------------------|---------------------------------------------------|
-| **Power**            | `tune set power X` | `0`: off, `1`: on                                 |
-| **Mode**             | `tune set mode X`  | `0`: fan mode, `1`: natural wind, `2`: night mode |
-| **Speed**            | `tune set speed X` | `1` to `26`                                       |
-| **Timer**            | `tune set timer X` | `0` to `12` hours                                 |
-| **Horizontal Osc.**  | `tune set swing X` | `0`: off, `1`: on                                 |
-| **Vertical Osc.**    | `tune set tilt X`  | `0`: off, `1`: on                                 |
+| Feature             |   Key    | Command Payload    | Value X=                                          |
+|---------------------|----------|--------------------|---------------------------------------------------|
+| **Power**           | `power`  | `tune set power X` | `0`: off, `1`: on                                 |
+| **Mode**            | `mode`   | `tune set mode X`  | `0`: fan mode, `1`: natural wind, `2`: night mode |
+| **Speed**           | `speed`  | `tune set speed X` | `1` to `26`                                       |
+| **Timer**           | `timer`  | `tune set timer X` | `0` to `12` hours                                 |
+| **Horizontal Osc.** | `swing`  | `tune set swing X` | `0`: off, `1`: on                                 |
+| **Vertical Osc.**   | `tilt`   | `tune set tilt X`  | `0`: off, `1`: on                                 |
+| **Battery Level**   | `batlvl` | N/A                | `0` to `10`                                       |
+| **Charging Status** | `batcha` | N/A                | `0`: not charging , `1`: charging                 |
 
 
 ### Whisper Flex 2
-| Feature              | Payload             |  X=                                     |
-|----------------------|---------------------|-----------------------------------------|
-| **Power**            | `tune set power X`  | `0`: off, `1`: on                       |
-| **Mode**             | `tune set mode X`   | `0`: fan mode, `1`: natural wind        |
-| **Speed**            | `tune set speed X`  | `1` to `30`                             |
-| **Timer**            | `tune set timer X`  | `0` to `12` hours                       |
-| **Horizontal Osc.**  | `tune set horosc X` | `0`: off, `1`: 30°, `2`: 60°, `3`: 90°  |
-| **Vertical Osc.**    | `tune set verosc X` | `0`: off, `1`: 45°, `2`: 100°           |
-| **Night Mode**       | `tune set night X`  | `0`: off, `1`: on                       |
-| **Child Lock**       | `tune set lock X`   | `0`: off, `1`: on                       |
+| Feature             |   Key    | Command Payload     | Value X=                               |
+|---------------------|----------|---------------------|----------------------------------------|
+| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
+| **Mode**            | `mode`   | `tune set mode X`   | `0`: fan mode, `1`: natural wind       |
+| **Speed**           | `speed`  | `tune set speed X`  | `1` to `30`                            |
+| **Timer**           | `timer`  | `tune set timer X`  | `0` to `12` hours                      |
+| **Horizontal Osc.** | `horosc` | `tune set horosc X` | `0`: off, `1`: 30°, `2`: 60°, `3`: 90° |
+| **Vertical Osc.**   | `verosc` | `tune set verosc X` | `0`: off, `1`: 45°, `2`: 100°          |
+| **Night Mode**      | `night`  | `tune set night X`  | `0`: off, `1`: on                      |
+| **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
+| **Battery Level**   | `batlvl` | N/A                 | `0` to `10`                            |
+| **Charging Status** | `batcha` | N/A                 | `0`: not charging , `1`: charging      |
+
+### Known Issues
+
+- **Charging Status** does not update automatically when the battery is fully charged.  
+  The fan only refreshes this attribute when the Power state changes.
+   This is a **firmware limitation**.
 
 
 ## 📡 Details
@@ -198,10 +208,13 @@ mqtts://collector3.cloudgarden.nl:443
 ### Fan publishes to:
 
 | Topic                         | Example Payload                                                                 |
-|-------------------------------|----------------------------------------------------------------------------------|
+|-------------------------------|---------------------------------------------------------------------------------|
 | `sensor/{device_id}/in`       | `{"sub":{"Tune":[{"uid":"xyz","power":1,"mode":0,"speed":10,"timer": 0,"horosc": 0,"verosc": 0,"lock": 0,"night": 1,"batcha": 0,"batlvl": 10}]}}` |
 | `sensor/{device_id}/online`   | `{"online":true,"connectionType":"mqtt"}`                                       |
 | `sensor/{device_id}/update`   | `{"pid":"xyz","tune":"DUUX Whisper Flex 2"}`                                    |
+
+> The fan publishes data immediately when a change occurs, and otherwise every 30 seconds to keep the online status active.
+
 
 ### Fan subscribes to:
 
@@ -217,6 +230,8 @@ mqtts://collector3.cloudgarden.nl:443
 Your Duux fan is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
 Enjoy full privacy, instant response times, and true independence from proprietary services.
 
+> **Note:** When connected to your local MQTT, the fan will no longer be able to receive firmware updates from the manufacturer.  
+> Disable local DNS forwarding and restart your fan to access the web again.
 
 ## 🛑 Disclaimer
 
