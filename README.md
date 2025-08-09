@@ -1,4 +1,4 @@
-# 🌀 Duux Fan – Local Integration for Home Assistant
+# 🌀 Duux Fan - Local Integration for Home Assistant
 
 **Take back control of your Duux fan - locally, privately, and cloud-free.**
 
