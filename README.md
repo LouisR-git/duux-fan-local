@@ -150,6 +150,10 @@ collector3.cloudgarden.nl → 192.168.x.x  # Your MQTT broker IP
 
 Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
 
+### Example Ubiquiti Unifi gateway
+
+Go to you Console -> Settings -> Policy Engine -> DNS -> Create a new `Host (A)` entry from `collector3.cloudgarden.nl` pointing to your MQTT broker IP. 
+
 ### Reboot the Fan
 
 To apply DNS changes :
