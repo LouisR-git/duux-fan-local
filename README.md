@@ -138,21 +138,19 @@ service mosquitto restart
 
 ## 🌐 Local DNS Spoofing
 
-Redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
+From your local DNS server, redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
+```
+collector3.cloudgarden.nl → 192.168.x.x
+```
 
 ### Example: AdGuard DNS Rewrite
 
-Go to AdGuard → Settings → DNS Rewrites:
+Go to AdGuard → Settings → DNS Rewrites
 
-```
-collector3.cloudgarden.nl → 192.168.x.x  # Your MQTT broker IP
-```
+### Example: Ubiquiti Unifi Gateway
 
-Other options: `dnsmasq`, `CoreDNS`, `Unbound`…
+Go to Console → Settings → Policy Engine → DNS → Create a new `Host (A)` entry
 
-### Example Ubiquiti Unifi gateway
-
-Go to you Console -> Settings -> Policy Engine -> DNS -> Create a new `Host (A)` entry from `collector3.cloudgarden.nl` pointing to your MQTT broker IP. 
 
 ### Reboot the Fan
 
