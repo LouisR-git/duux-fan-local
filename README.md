@@ -176,8 +176,6 @@ It should now connect to your **local MQTT broker on port 443** using TLS.
 | **Timer**           | `timer`  | `tune set timer X` | `0` to `12` hours                                 |
 | **Horizontal Osc.** | `swing`  | `tune set swing X` | `0`: off, `1`: on                                 |
 | **Vertical Osc.**   | `tilt`   | `tune set tilt X`  | `0`: off, `1`: on                                 |
-| **Battery Level**   | `batlvl` | N/A                | `0` to `10`                                       |
-| **Charging Status** | `batcha` | N/A                | `0`: not charging , `1`: charging                 |
 
 
 ### Whisper Flex 2

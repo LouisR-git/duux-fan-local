@@ -11,11 +11,10 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.const import PERCENTAGE
 
-from .const import DOMAIN, MANUFACTURER, MODELS, ATTR_BATLVL
+from .const import DOMAIN, MANUFACTURER, MODELS, MODEL_V1, ATTR_BATLVL
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -26,16 +25,21 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
+    model = config_entry.data.get("model", "whisper_flex_2")  # Default to V2
 
-    sensors = [
-        DuuxBatteryLevelSensor(
-            client=client,
-            device_id=device_id,
-            base_name=base_name,
-            model=model,
-        ),
-    ]
+    sensors = []
+
+    # Only add battery sensor for V2 fans
+    if model != MODEL_V1:
+        sensors.append(
+            DuuxBatteryLevelSensor(
+                client=client,
+                device_id=device_id,
+                base_name=base_name,
+                model=model,
+            )
+        )
+
     async_add_entities(sensors)
 
 
@@ -84,9 +88,9 @@ class DuuxBatteryLevelSensor(SensorEntity):
         self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:
-        """Run when entity about to be added."""
+        """Run when entity is added to hass."""
         self._client.register_callback(self._update_state)
 
     async def async_will_remove_from_hass(self) -> None:
-        """Run when entity will be removed."""
+        """Run when entity is about to be removed."""
         self._client.unregister_callback(self._update_state)

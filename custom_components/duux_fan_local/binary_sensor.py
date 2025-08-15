@@ -23,9 +23,13 @@ async def async_setup_entry(
     base_name = config_entry.data["name"]
     model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
 
-    binary_sensors = [
-        DuuxChargingBinarySensor(client, device_id, base_name, model),
-    ]
+    binary_sensors = []
+
+    # Only add binary sensor for V2 fans
+    if model != MODEL_V1:
+        sensors.append(
+             DuuxChargingBinarySensor(client, device_id, base_name, model),
+        )
     async_add_entities(binary_sensors)
 
 
