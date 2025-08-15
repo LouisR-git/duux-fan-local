@@ -84,8 +84,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_MODEL): vol.In(MODELS),
-                vol.Required(CONF_NAME, default="Living Room Fan"): str,
-                vol.Required(CONF_DEVICE_ID, default="a1:b2:c3:d4:e5:f6"): str,
+                vol.Required(CONF_NAME): str,
+                vol.Required(CONF_DEVICE_ID): str,
             }
         )
 
