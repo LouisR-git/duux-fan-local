@@ -1,0 +1,17 @@
+homeassistant:
+  name: Dev - duux-fan-local
+  latitude: 48.8566
+  longitude: 2.3522
+  unit_system: metric
+  time_zone: Europe/Paris
+
+default_config:
+
+http:
+  server_host: 0.0.0.0
+  server_port: 8123
+
+logger:
+  default: info
+  logs:
+    custom_components.duux_fan_local: debug
