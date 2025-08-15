@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS, ATTR_BATCHA
+from .const import DOMAIN, MANUFACTURER, MODELS, ATTR_BATCHA, MODEL_V1
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,8 +27,8 @@ async def async_setup_entry(
 
     # Only add binary sensor for V2 fans
     if model != MODEL_V1:
-        sensors.append(
-             DuuxChargingBinarySensor(client, device_id, base_name, model),
+        binary_sensors.append(
+            DuuxChargingBinarySensor(client, device_id, base_name, model),
         )
     async_add_entities(binary_sensors)
 
