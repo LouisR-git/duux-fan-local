@@ -23,7 +23,9 @@ class DuuxMqttClient:
     def __init__(self, hass: HomeAssistant, config: dict):
         """Initialize the client."""
         self.hass = hass
-        self.device_id = config[CONF_DEVICE_ID].lower()  # Ensure MAC address is lowercase
+        self.device_id = config[
+            CONF_DEVICE_ID
+        ].lower()  # Ensure MAC address is lowercase
         self.command_topic = TOPIC_COMMAND.format(device_id=self.device_id)
         self.state_topic = TOPIC_STATE.format(device_id=self.device_id)
         self._callbacks = []
@@ -75,9 +77,16 @@ class DuuxMqttClient:
                 for update_callback in self._callbacks:
                     self.hass.add_job(update_callback, fan_data)
             else:
-                _LOGGER.debug("Parsed fan_data is empty or not a dict. Skipping update.")
+                _LOGGER.debug(
+                    "Parsed fan_data is empty or not a dict. Skipping update."
+                )
         except (json.JSONDecodeError, KeyError, IndexError) as e:
-            _LOGGER.warning("Could not parse payload on %s: %s (Error: %s)", msg.topic, msg.payload, e)
+            _LOGGER.warning(
+                "Could not parse payload on %s: %s (Error: %s)",
+                msg.topic,
+                msg.payload,
+                e,
+            )
 
     def register_callback(self, update_callback):
         """Register a callback to be called on new messages."""

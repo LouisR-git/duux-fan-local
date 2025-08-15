@@ -3,10 +3,18 @@ from typing import Any
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS, MODEL_V1, ATTR_NIGHT_MODE, ATTR_CHILD_LOCK, ATTR_HOR_OSC, ATTR_VER_OSC, ATTR_SWING, ATTR_TILT
+from .const import (
+    DOMAIN,
+    MANUFACTURER,
+    MODELS,
+    MODEL_V1,
+    ATTR_NIGHT_MODE,
+    ATTR_CHILD_LOCK,
+    ATTR_SWING,
+    ATTR_TILT,
+)
 from .mqtt import DuuxMqttClient
 
 SWITCH_TYPES = {
@@ -46,6 +54,7 @@ SWITCH_TYPES = {
     },
 }
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -55,7 +64,9 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
+    model = config_entry.data.get(
+        "model", "whisper_flex_2"
+    )  # Default to v2 for backward compatibility
 
     switches = []
 
@@ -74,7 +85,9 @@ async def async_setup_entry(
         if "model_specific" in details and details["model_specific"] != model:
             continue
 
-        switches.append(DuuxSwitch(client, device_id, base_name, model, switch_type, details))
+        switches.append(
+            DuuxSwitch(client, device_id, base_name, model, switch_type, details)
+        )
 
     async_add_entities(switches)
 

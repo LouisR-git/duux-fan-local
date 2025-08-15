@@ -11,9 +11,19 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN, CONF_DEVICE_ID, CONF_MODEL, MODELS, MQTT_HOST, MQTT_PORT, MQTT_TIMEOUT, TOPIC_STATE
+from .const import (
+    DOMAIN,
+    CONF_DEVICE_ID,
+    CONF_MODEL,
+    MODELS,
+    MQTT_HOST,
+    MQTT_PORT,
+    MQTT_TIMEOUT,
+    TOPIC_STATE,
+)
 
 _LOGGER = logging.getLogger(__name__)
+
 
 def test_connection(device_id: str) -> bool:
     """Tests the connection to the Duux MQTT broker by listening for a message."""
@@ -48,7 +58,9 @@ def test_connection(device_id: str) -> bool:
         return False
     except Exception as e:
         if isinstance(e, ImportError):
-            _LOGGER.error("paho-mqtt library not found. Please ensure it's in requirements.")
+            _LOGGER.error(
+                "paho-mqtt library not found. Please ensure it's in requirements."
+            )
         else:
             _LOGGER.error("An unexpected error occurred during connection test: %s", e)
         return False
@@ -59,8 +71,9 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-
-    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         errors: dict[str, str] = {}
 
         if user_input is not None:
