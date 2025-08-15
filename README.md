@@ -42,11 +42,11 @@ The integration will now appear like any standard Home Assistant integration.
    - ✅ **DNS redirection** (reroute Duux API calls to your local Broker) 
 
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
-3. Select your fan model from the list.
-4. Give your device a friendly name.
-5. Enter the **MAC address** of your Duux fan
-   > 💡 You can find it in your router’s connected devices list.
-6. Click **Submit** and enjoy local control of your fan!
+3. Choose whether to connect to your MQTT broker anonymously or with credentials.
+4. If using credentials, enter your MQTT **username** and **password**.
+5. Provide a friendly name, the **MAC address** of your Duux fan, and select its model
+   > 💡 You can find the MAC in your router’s connected devices list.
+6. Click **Submit** to test the connection and finish the setup!
 
 ### Screenshots
 

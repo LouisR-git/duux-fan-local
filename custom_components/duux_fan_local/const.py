@@ -3,6 +3,8 @@ DOMAIN = "duux_fan_local"
 # Configuration keys
 CONF_DEVICE_ID = "device_id"
 CONF_MODEL = "model"
+CONF_USERNAME = "username"
+CONF_PASSWORD = "password"
 MANUFACTURER = "Duux"
 MODELS = {
     "whisper_flex_1": "Whisper Flex 1",

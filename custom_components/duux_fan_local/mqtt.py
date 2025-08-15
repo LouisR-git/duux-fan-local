@@ -8,6 +8,8 @@ from homeassistant.core import HomeAssistant
 
 from .const import (
     CONF_DEVICE_ID,
+    CONF_PASSWORD,
+    CONF_USERNAME,
     MQTT_HOST,
     MQTT_PORT,
     TOPIC_COMMAND,
@@ -30,6 +32,8 @@ class DuuxMqttClient:
         self._client = mqtt.Client()
         self._client.on_connect = self.on_connect
         self._client.on_message = self.on_message
+        self._username = config.get(CONF_USERNAME)
+        self._password = config.get(CONF_PASSWORD)
 
     async def async_connect(self):
         """Asynchronously configure TLS and connect to the MQTT broker."""
@@ -37,6 +41,8 @@ class DuuxMqttClient:
 
         def configure_tls_and_connect():
             self._client.tls_set(cert_reqs=ssl.CERT_NONE)
+            if self._username or self._password:
+                self._client.username_pw_set(self._username, self._password)
             self._client.connect(MQTT_HOST, MQTT_PORT, 60)
 
         try:

@@ -1,12 +1,27 @@
 {
     "config": {
         "step": {
-            "user": {
-                "title": "Ajouter un ventilateur Duux",
+            "connection": {
+                "title": "Connexion MQTT",
                 "data": {
-                    "model": "Modèle du ventilateur",
+                    "connection_type": "Type de connexion",
+                    "anonymous": "Anonyme",
+                    "credentials": "Nom d'utilisateur et mot de passe"
+                }
+            },
+            "credentials": {
+                "title": "Identifiants MQTT",
+                "data": {
+                    "username": "Nom d'utilisateur MQTT",
+                    "password": "Mot de passe MQTT"
+                }
+            },
+            "device": {
+                "title": "Configurer le ventilateur Duux",
+                "data": {
                     "name": "Nom",
-                    "device_id": "Identifiant (MAC)"
+                    "device_id": "Identifiant (MAC)",
+                    "model": "Modèle du ventilateur"
                 },
                 "data_description": {
                     "name": "Exemple : Ventilateur Salon",

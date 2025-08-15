@@ -1,12 +1,27 @@
 {
     "config": {
         "step": {
-            "user": {
-                "title": "Add a Duux Fan",
+            "connection": {
+                "title": "MQTT Connection",
                 "data": {
-                    "model": "Fan Model",
+                    "connection_type": "Connection type",
+                    "anonymous": "Anonymous",
+                    "credentials": "Username and password"
+                }
+            },
+            "credentials": {
+                "title": "MQTT Credentials",
+                "data": {
+                    "username": "MQTT Username",
+                    "password": "MQTT Password"
+                }
+            },
+            "device": {
+                "title": "Configure Duux Fan",
+                "data": {
                     "name": "Name",
-                    "device_id": "Identifier (MAC)"
+                    "device_id": "Identifier (MAC)",
+                    "model": "Fan Model"
                 },
                 "data_description": {
                     "name": "Example: Living Room Fan",
