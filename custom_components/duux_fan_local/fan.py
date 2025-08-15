@@ -9,13 +9,11 @@ from homeassistant.util.percentage import (
     percentage_to_ranged_value,
     ranged_value_to_percentage,
 )
-from homeassistant.const import CONF_NAME
 
 from .const import (
     DOMAIN,
     MANUFACTURER,
     MODELS,
-    CONF_DEVICE_ID,
     MODEL_V1,
     ATTR_POWER,
     ATTR_SPEED,
@@ -38,7 +36,9 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
+    model = config_entry.data.get(
+        "model", "whisper_flex_2"
+    )  # Default to v2 for backward compatibility
 
     fan = [
         DuuxFan(client, device_id, base_name, model),
@@ -85,7 +85,9 @@ class DuuxFan(FanEntity):
 
         # V1 fans support simple oscillation and direction
         if model == MODEL_V1:
-            supported_features |= FanEntityFeature.OSCILLATE | FanEntityFeature.DIRECTION
+            supported_features |= (
+                FanEntityFeature.OSCILLATE | FanEntityFeature.DIRECTION
+            )
 
         self._attr_supported_features = supported_features
 
@@ -168,7 +170,9 @@ class DuuxFan(FanEntity):
             # Swing represents horizontal oscillation
             self._oscillating = fan_data.get(ATTR_SWING, 0) == 1
             # Tilt represents vertical oscillation/direction
-            self._direction = "reverse" if fan_data.get(ATTR_TILT, 0) == 1 else "forward"
+            self._direction = (
+                "reverse" if fan_data.get(ATTR_TILT, 0) == 1 else "forward"
+            )
 
         self.async_write_ha_state()
 

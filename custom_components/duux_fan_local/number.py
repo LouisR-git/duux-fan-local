@@ -1,7 +1,6 @@
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.const import UnitOfTime
 
@@ -15,10 +14,6 @@ from .const import (
     MAX_TIMER,
     MAX_SPEED_V1,
     MAX_SPEED_V2,
-    ATTR_HOR_OSC,
-    ATTR_VER_OSC,
-    MAX_HOR_OSC,
-    MAX_VER_OSC,
 )
 from .mqtt import DuuxMqttClient
 
@@ -32,7 +27,9 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
+    model = config_entry.data.get(
+        "model", "whisper_flex_2"
+    )  # Default to v2 for backward compatibility
 
     entities = [
         DuuxTimerNumber(client, device_id, base_name, model),
@@ -91,7 +88,9 @@ class DuuxTimerNumber(DuuxBaseNumber):
     _attr_icon = "mdi:timer-outline"
     _attr_entity_category = None
 
-    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
+    def __init__(
+        self, client: DuuxMqttClient, device_id: str, base_name: str, model: str
+    ):
         super().__init__(client, device_id, base_name, model)
         self._attr_name = f"{base_name} Timer"
         self._attr_unique_id = f"{DOMAIN}_{device_id}_timer"
@@ -118,7 +117,9 @@ class DuuxSpeedNumber(DuuxBaseNumber):
     _attr_icon = "mdi:speedometer"
     _attr_entity_category = None
 
-    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
+    def __init__(
+        self, client: DuuxMqttClient, device_id: str, base_name: str, model: str
+    ):
         super().__init__(client, device_id, base_name, model)
         self._attr_name = f"{base_name} Speed"
         self._attr_unique_id = f"{DOMAIN}_{device_id}_speed"

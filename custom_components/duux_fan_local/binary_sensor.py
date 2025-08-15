@@ -1,7 +1,10 @@
 import logging
 from typing import Any
 
-from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.components.binary_sensor import (
+    BinarySensorEntity,
+    BinarySensorDeviceClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -21,7 +24,9 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to v2 for backward compatibility
+    model = config_entry.data.get(
+        "model", "whisper_flex_2"
+    )  # Default to v2 for backward compatibility
 
     binary_sensors = []
 
@@ -40,7 +45,9 @@ class DuuxChargingBinarySensor(BinarySensorEntity):
     _attr_device_class = BinarySensorDeviceClass.BATTERY_CHARGING
     _attr_icon = "mdi:battery-charging"
 
-    def __init__(self, client: DuuxMqttClient, device_id: str, base_name: str, model: str):
+    def __init__(
+        self, client: DuuxMqttClient, device_id: str, base_name: str, model: str
+    ):
         """Initialize the binary sensor."""
         self._client = client
         self._device_id = device_id

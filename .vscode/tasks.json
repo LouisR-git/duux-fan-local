@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Home Assistant (foreground)",
+      "type": "shell",
+      "command": "hass -c /config",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Home Assistant (background)",
+      "type": "shell",
+      "command": "bash -lc 'mkdir -p /config && nohup hass -c /config > /home/vscode/ha.log 2>&1 & echo $! > /home/vscode/ha.pid && echo HA started with PID $(cat /home/vscode/ha.pid)'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Tail HA log",
+      "type": "shell",
+      "command": "tail -f /home/vscode/ha.log",
+      "problemMatcher": []
+    },
+    {
+      "label": "Stop Home Assistant",
+      "type": "shell",
+      "command": "bash -lc 'kill -TERM $(cat /home/vscode/ha.pid 2>/dev/null) 2>/dev/null || true'",
+      "problemMatcher": []
+    }
+  ]
+}

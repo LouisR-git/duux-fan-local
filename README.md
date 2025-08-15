@@ -1,3 +1,9 @@
+[![GitHub Release][releases-shield]][releases]
+[![License][license-shield]][license]
+[![hacs][hacs-badge]][hacs]
+[![pre-commit][pre-commit-shield]][pre-commit]
+[![Black][black-shield]][black]
+
 # 🌀 Duux Fan - Local Integration for Home Assistant
 
 **Take back control of your Duux fan - locally, privately, and cloud-free.**
@@ -23,7 +29,7 @@ Please contribute your feedback to help improve compatibility.
 This integration is not (yet) available in the official HACS default repository list.
 However, you can easily add it as a **custom repository**:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=duux-fan-local&category=Integration&owner=LouisR-git)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.][myha-repo-badge]][myha-repo]
 
 1. Open **HACS** in your Home Assistant interface
 2. Click the **three dots (⋮)** in the top-right corner and select **"Custom repositories"**
@@ -37,9 +43,9 @@ The integration will now appear like any standard Home Assistant integration.
 
 ### Initial setup
 
-1. Follow the **instructions below** to install the required prerequisites:  
+1. Follow the **instructions below** to install the required prerequisites:
    - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
-   - ✅ **DNS redirection** (reroute Duux API calls to your local Broker) 
+   - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
 
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
 3. Select your fan model from the list.
@@ -57,7 +63,7 @@ The integration will now appear like any standard Home Assistant integration.
 
 ## 🧰 Prerequisites
 
-Duux fans communicate with the cloud using **MQTT over TLS**.  
+Duux fans communicate with the cloud using **MQTT over TLS**.
 By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into Home Assistant.
 
 You’ll need:
@@ -194,7 +200,7 @@ It should now connect to your **local MQTT broker on port 443** using TLS.
 
 ### Known Issues
 
-- **Charging Status** does not update automatically when the battery is fully charged.  
+- **Charging Status** does not update automatically when the battery is fully charged.
   The fan only refreshes this attribute when the Power state changes.
    This is a **firmware limitation**.
 
@@ -233,7 +239,7 @@ mqtts://collector3.cloudgarden.nl:443
 Your Duux fan is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
 Enjoy full privacy, instant response times, and true independence from proprietary services.
 
-> **Note:** When connected to your local MQTT, the fan will no longer be able to receive firmware updates from the manufacturer.  
+> **Note:** When connected to your local MQTT, the fan will no longer be able to receive firmware updates from the manufacturer.
 > Disable local DNS forwarding and restart your fan to access the web again.
 
 ## 🛑 Disclaimer
@@ -245,5 +251,24 @@ For educational and interoperability purposes only.
 ## 🙌 Credits
 
 Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.
-A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic](https://community.home-assistant.io/t/experience-integrating-duux-products/386403/154) which greatly helped this integration.
+A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic][ha-forum-duux-topic] which greatly helped this integration.
 Contributions welcome! 🛠️
+
+
+---
+
+<!-- badge -->
+[hacs]: https://hacs.xyz
+[hacs-badge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[license]: https://github.com/LouisR-git/duux-fan-local/blob/main/LICENSE
+[license-shield]: https://img.shields.io/github/license/LouisR-git/duux-fan-local.svg?style=for-the-badge
+[releases]: https://github.com/LouisR-git/duux-fan-local/releases
+[releases-shield]: https://img.shields.io/github/release/LouisR-git/duux-fan-local.svg?style=for-the-badge
+[pre-commit]: https://github.com/pre-commit/pre-commit
+[pre-commit-shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?style=for-the-badge
+[black]: https://github.com/psf/black
+[black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
+[myha-repo]: https://my.home-assistant.io/redirect/hacs_repository/?repository=duux-fan-local&category=Integration&owner=LouisR-git
+[myha-repo-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
+<!-- ref -->
+[ha-forum-duux-topic]: https://community.home-assistant.io/t/experience-integrating-duux-products/386403
