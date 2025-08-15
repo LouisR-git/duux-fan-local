@@ -1,0 +1,25 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Ajouter un ventilateur Duux",
+                "data": {
+                    "model": "Modèle du ventilateur",
+                    "name": "Nom",
+                    "device_id": "Identifiant (MAC)"
+                },
+                "data_description": {
+                    "name": "Exemple : Ventilateur Salon",
+                    "device_id": "Exemple : a1:b2:c3:d4:e5:f6"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Échec de la connexion au ventilateur. Veuillez vous assurer que le ventilateur est allumé, connecté à votre réseau Wi-Fi, et que l'identifiant de l'appareil (adresse MAC) est correct. Vérifier l'état et la connexion du broker MQTT.",
+            "unknown": "Une erreur inconnue est survenue."
+        },
+        "abort": {
+            "already_configured": "Ce ventilateur Duux est déjà configuré."
+        }
+    }
+}

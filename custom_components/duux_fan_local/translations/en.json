@@ -1,0 +1,25 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Add a Duux Fan",
+                "data": {
+                    "model": "Fan Model",
+                    "name": "Name",
+                    "device_id": "Identifier (MAC)"
+                },
+                "data_description": {
+                    "name": "Example: Living Room Fan",
+                    "device_id": "Example: a1:b2:c3:d4:e5:f6"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the fan. Please ensure the fan is powered on, connected to your Wi-Fi network, and that the device identifier (MAC address) is correct. Check the MQTT broker status and connection.",
+            "unknown": "An unknown error occurred."
+        },
+        "abort": {
+            "already_configured": "This Duux fan is already configured."
+        }
+    }
+}
