@@ -94,13 +94,14 @@ Unplug → remove the battery → wait ~1 second → reinsert → power on.
 ## ⚙️ Setting up a local MQTT broker
 
 ### Option A - EMQX (TLS + Authentication) - **Recommended**
-- **Goal:** strong local setup with TLS and username/password
-- See **docs/guide-emqx.md**
+- **Goal:** A robust local setup with TLS encryption and username/password authentication.  
+- 📖 See the [EMQX installation guide](docs/guide-emqx.md)
 
 ### Option B - Mosquitto (Anonymous TLS)
-- **Goal:** fastest lab/test setup
-- **Security:** **NOT** secure (anonymous)
-- See **docs/guide-mosquitto.md**
+- **Goal:** The quickest option for labs or testing environments.  
+- ⚠️ **Security:** Not secure (anonymous access).  
+- 📖 See the [Mosquitto installation guide](docs/guide-mosquitto.md)
+
 
 
 ## 📋 Supported Features/Models
@@ -205,3 +206,4 @@ Contributions welcome! 🛠️
 [myha-repo-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
 <!-- ref -->
 [ha-forum-duux-topic]: https://community.home-assistant.io/t/experience-integrating-duux-products/386403
+
