@@ -46,7 +46,7 @@ The integration will now appear like any standard Home Assistant integration.
 1. Follow the **instructions below** to install the required prerequisites:
    - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
    - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
-   
+
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
 3. Select your fan model from the list.
 4. Give your device a friendly name.
@@ -94,12 +94,12 @@ Unplug → remove the battery → wait ~1 second → reinsert → power on.
 ## ⚙️ Setting up a local MQTT broker
 
 ### Option A - EMQX (TLS + Authentication) - **Recommended**
-- **Goal:** strong local setup with TLS and username/password  
+- **Goal:** strong local setup with TLS and username/password
 - See **docs/guide-emqx.md**
 
 ### Option B - Mosquitto (Anonymous TLS)
-- **Goal:** fastest lab/test setup  
-- **Security:** **NOT** secure (anonymous)  
+- **Goal:** fastest lab/test setup
+- **Security:** **NOT** secure (anonymous)
 - See **docs/guide-mosquitto.md**
 
 

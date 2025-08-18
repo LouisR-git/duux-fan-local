@@ -1,6 +1,6 @@
 # Option A - EMQX (TLS + Authentication) — Recommended
 
-Secure setup with **username/password** and **TLS**.  
+Secure setup with **username/password** and **TLS**.
 
 ## 1. Install EMQX
 
@@ -39,12 +39,12 @@ Install tool:
 apt install -y socat
 ```
 
-Run **socat** to listen TLS on **443** 
+Run **socat** to listen TLS on **443**
 ```bash
 socat openssl-listen:443,reuseaddr,cert=/etc/emqx/certs/collector3.cloudgarden.nl.crt,key=/etc/emqx/certs/collector3.cloudgarden.nl.key,verify=0,openssl-min-proto-version=TLS1.2 STDIO > duux_mqtt_capture.log
 ```
 
-Reboot the fan to force a new CONNECT.  
+Reboot the fan to force a new CONNECT.
 
 Stop the capture and look at the file `duux_mqtt_capture.log`, you should see something like :
 ```
@@ -55,8 +55,8 @@ Stop the capture and look at the file `duux_mqtt_capture.log`, you should see so
 ### 4.1. Create an authentication provider in EMQX
 
 Go to EMQX dashboard `https://[EMQX_SERVER_IP]:18083/` (default creds: admin/public) :
-- **Access Control** → **Authentication**  
-- **Create** provider → **Password-based** → **Built-in Database**  
+- **Access Control** → **Authentication**
+- **Create** provider → **Password-based** → **Built-in Database**
 
 ### 4.2. Add users
 - **Access Control → Authentication** → **Users** → **Add**
@@ -66,7 +66,7 @@ Create a reader user :
 - **Add user**: a **username** and a **password** (exemple: reader/reader)
 
 ### 4.3. Configure user authorizations
-- **Access Control** → **Authorization**  
+- **Access Control** → **Authorization**
 - **File** → **Settings**
 - Add this rules at the begining of the file :
 ```

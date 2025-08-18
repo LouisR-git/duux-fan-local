@@ -1,6 +1,6 @@
 # Option B — Mosquitto (Anonymous TLS)
 
-Quickest local control for testing/labs. 
+Quickest local control for testing/labs.
 
 ## 1. Install Mosquitto
 
