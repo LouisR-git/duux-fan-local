@@ -2,6 +2,14 @@
     "config": {
         "step": {
             "user": {
+                "title": "Connect to MQTT broker",
+                "description": "Leave the fields empty to connect anonymously.",
+                "data": {
+                    "username": "MQTT Username",
+                    "password": "MQTT Password"
+                }
+            },
+            "device": {
                 "title": "Add a Duux Fan",
                 "data": {
                     "model": "Fan Model",

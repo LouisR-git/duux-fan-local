@@ -4,6 +4,7 @@ import ssl
 import asyncio
 
 import paho.mqtt.client as mqtt
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 
 from .const import (
@@ -28,6 +29,8 @@ class DuuxMqttClient:
         ].lower()  # Ensure MAC address is lowercase
         self.command_topic = TOPIC_COMMAND.format(device_id=self.device_id)
         self.state_topic = TOPIC_STATE.format(device_id=self.device_id)
+        self._username = config.get(CONF_USERNAME)
+        self._password = config.get(CONF_PASSWORD)
         self._callbacks = []
         self._client = mqtt.Client()
         self._client.on_connect = self.on_connect
@@ -38,6 +41,8 @@ class DuuxMqttClient:
         loop = asyncio.get_running_loop()
 
         def configure_tls_and_connect():
+            if self._username:
+                self._client.username_pw_set(self._username, self._password)
             self._client.tls_set(cert_reqs=ssl.CERT_NONE)
             self._client.connect(MQTT_HOST, MQTT_PORT, 60)
 

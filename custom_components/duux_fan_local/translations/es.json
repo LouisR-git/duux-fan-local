@@ -2,6 +2,14 @@
     "config": {
         "step": {
             "user": {
+                "title": "Conectar al broker MQTT",
+                "description": "Deja los campos vacíos para conectarte de forma anónima.",
+                "data": {
+                    "username": "Usuario MQTT",
+                    "password": "Contraseña MQTT"
+                }
+            },
+            "device": {
                 "title": "Agregar un ventilador Duux",
                 "data": {
                     "model": "Modelo del ventilador",
