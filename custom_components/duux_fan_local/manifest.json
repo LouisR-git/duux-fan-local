@@ -9,5 +9,6 @@
   "issue_tracker": "https://github.com/LouisR-git/duux-fan-local/issues",
   "loggers": ["duux_fan_local"],
   "requirements": ["paho-mqtt==2.1.0"],
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
+
