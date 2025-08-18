@@ -4,7 +4,7 @@
 [![pre-commit][pre-commit-shield]][pre-commit]
 [![Black][black-shield]][black]
 
-# 🌀 Duux Fan - Local Integration for Home Assistant
+# 🌀 Duux Fan - Local integration for Home Assistant
 
 **Take back control of your Duux fan - locally, privately, and cloud-free.**
 
@@ -12,7 +12,7 @@ This project allows you to use your **Duux Whisper Flex smart fan** entirely out
 
 No cloud. No account. No lag.
 
-## 📌 Supported Models
+## 📌 Supported models
 
 This integration has been tested and validated on the following models:
 
@@ -44,8 +44,8 @@ The integration will now appear like any standard Home Assistant integration.
 ### Initial setup
 
 1. Follow the **instructions below** to install the required prerequisites:
-   - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
    - ✅ **DNS redirection** (reroute Duux API calls to your local Broker)
+   - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
 
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
 3. Select your fan model from the list.
@@ -72,84 +72,14 @@ You’ll need:
 - **A self-hosted MQTT broker**, reachable as `collector3.cloudgarden.nl` on port 443
 - Basic Linux CLI knowledge
 
-
-## ⚙️ Setting Up the Local MQTT Broker
-
-Any Linux host will work. Below is an example using a **Proxmox LXC container**.
-
-### LXC Mosquitto Setup (Port 443 + TLS)
-
-#### 1. Create the container
-
-You can use this helper script (optional but easy):
-👉 https://community-scripts.github.io/ProxmoxVE/scripts?id=mqtt
-
-> ✅ No need for a privileged container.
-
-#### 2. Mosquitto TLS Configuration
-
-Edit `/etc/mosquitto/mosquitto.conf`:
-
-```ini
-user root  # Required to bind to port 443
-```
-
-> ⚠️ **Warning:** Running Mosquitto as `root` is not recommended. Use this approach only in isolated or controlled environments. Alternatively, you can use `iptables` to forward connections to a non-root MQTT listener port or set up `port forwarding (DNAT)` on your router to redirect traffic to a MQTT broker ...
-
-Then remove the default config:
-
-```bash
-rm /etc/mosquitto/conf.d/default.conf
-```
-
-Create a custom config at `/etc/mosquitto/conf.d/duux-fan.conf`:
-
-```ini
-listener 443
-allow_anonymous true
-
-# TLS settings
-certfile /etc/mosquitto/certs/mosquitto.crt
-keyfile /etc/mosquitto/certs/mosquitto.key
-require_certificate false
-tls_version tlsv1.2
-```
-
-#### 3. Create Self-Signed Certificates
-
-```bash
-mkdir -p /etc/mosquitto/certs/
-cd /etc/mosquitto/certs/
-
-openssl genrsa -out mosquitto.key 2048
-openssl req -new -key mosquitto.key -out collector3.cloudgarden.csr
-```
-
-When prompted, set the **Common Name** (CN) to:
-```
-collector3.cloudgarden.nl
-```
-
-Then sign it:
-
-```bash
-openssl x509 -req -in collector3.cloudgarden.csr -signkey mosquitto.key -out mosquitto.crt -days 3650
-```
-
-#### 4. Restart the broker
-
-```bash
-service mosquitto restart
-```
-
-## 🌐 Local DNS Spoofing
+## 🌐 Local DNS spoofing
 
 From your local DNS server, redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
 ```
 collector3.cloudgarden.nl → 192.168.x.x
 ```
 
-### Example: AdGuard DNS Rewrite
+### Example: AdGuard DNS rewrite
 
 Go to AdGuard → Settings → DNS Rewrites
 
@@ -157,17 +87,20 @@ Go to AdGuard → Settings → DNS Rewrites
 
 Go to Console → Settings → Policy Engine → DNS → Create a new `Host (A)` entry
 
+### Reboot the fan after DNS changes
+Unplug → remove the battery → wait ~1 second → reinsert → power on.
 
-### Reboot the Fan
 
-To apply DNS changes :
+## ⚙️ Setting up a local MQTT broker
 
-- Unplug the fan
-- Remove the battery
-- Wait 2 seconds
-- Replug
+### Option A - EMQX (TLS + Authentication) - **Recommended**
+- **Goal:** strong local setup with TLS and username/password
+- See **docs/guide-emqx.md**
 
-It should now connect to your **local MQTT broker on port 443** using TLS.
+### Option B - Mosquitto (Anonymous TLS)
+- **Goal:** fastest lab/test setup
+- **Security:** **NOT** secure (anonymous)
+- See **docs/guide-mosquitto.md**
 
 
 ## 📋 Supported Features/Models
