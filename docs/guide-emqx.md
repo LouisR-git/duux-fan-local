@@ -63,7 +63,7 @@ Go to EMQX dashboard `https://[EMQX_SERVER_IP]:18083/` (default creds: admin/pub
 Create the fan user :
 - **[USERNAME_@MAC]** and **[PASSWORD_64_characters]**
 Create a reader user :
-- **Add user**: a **username** and a **password** (exemple: reader/reader)
+- **Add user**: a **username** and a **password** (exemple: ha_user/ha_password)
 
 ### 4.3. Configure user authorizations
 - **Access Control** → **Authorization**
@@ -71,9 +71,11 @@ Create a reader user :
 - Add this rules at the begining of the file :
 ```
 %% ===============================
-%% ACL for user "reader"
-%% Can only SUBSCRIBE to the "/sensor" topic
-{allow, {user, "reader"}, subscribe, ["/sensor"]}.
+%% ACL for user "ha_user"
+%% Can PUBLISH and SUBSCRIBE to "/sensor" and all its subtopics
+{allow, {user, "ha_user"}, subscribe, ["/sensor", "/sensor/#"]}.
+{allow, {user, "ha_user"}, publish,   ["/sensor", "/sensor/#"]}.
+```
 
 %% ===============================
 %% ACL for user "[USERNAME_@MAC]"
@@ -111,3 +113,4 @@ nft add chain ip nat output     { type nat hook output     priority 0 \; }
 nft add rule ip nat prerouting  tcp dport 443 redirect to :8883
 nft add rule ip nat output      tcp dport 443 redirect to :8883
 ```
+
