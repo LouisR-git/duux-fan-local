@@ -106,12 +106,19 @@ service emqx restart
 ```
 
 ## 6. Set port 443 redirection
+Edit `/etc/nftables.conf` and add at the end of the file :
 
 ```bash
-nft add table ip nat
-nft add chain ip nat prerouting { type nat hook prerouting priority 0 \; }
-nft add chain ip nat output     { type nat hook output     priority 0 \; }
-nft add rule ip nat prerouting  tcp dport 443 redirect to :8883
-nft add rule ip nat output      tcp dport 443 redirect to :8883
+table ip nat {
+    chain prerouting {
+        type nat hook prerouting priority 0;
+        tcp dport 443 redirect to :8883
+    }
+}
 ```
+Restart the service to apply configuration :
+```
+systemctl restart nftables
+```
+
 
