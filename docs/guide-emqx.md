@@ -77,6 +77,7 @@ Create a reader user :
 {allow, {user, "ha_user"}, publish,   ["/sensor", "/sensor/#"]}.
 ```
 
+```
 %% ===============================
 %% ACL for user "[USERNAME_@MAC]"
 %% Can PUBLISH and SUBSCRIBE to "/sensor" and all its subtopics
@@ -113,3 +114,4 @@ nft add chain ip nat output     { type nat hook output     priority 0 \; }
 nft add rule ip nat prerouting  tcp dport 443 redirect to :8883
 nft add rule ip nat output      tcp dport 443 redirect to :8883
 ```
+
