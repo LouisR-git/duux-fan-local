@@ -1,13 +1,19 @@
 {
   "domain": "duux_fan_local",
   "name": "Duux Fan Local",
-  "codeowners": ["@LouisR-git"],
+  "codeowners": [
+    "@LouisR-git"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/LouisR-git/duux-fan-local",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/LouisR-git/duux-fan-local/issues",
-  "loggers": ["duux_fan_local"],
-  "requirements": ["paho-mqtt==2.1.0"],
-  "version": "1.1.1"
+  "loggers": [
+    "duux_fan_local"
+  ],
+  "requirements": [
+    "paho-mqtt==2.1.0"
+  ],
+  "version": "2.0.0"
 }
