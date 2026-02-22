@@ -1,14 +1,12 @@
-"""Config flow for Duux Fan."""
+"""
+Configuration flow for Duux Fan Local.
+Handles UI setup, discovering devices, and testing the MQTT connection.
+"""
 
 from __future__ import annotations
 import logging
 import ssl
 import threading
-
-"""
-Configuration flow for Duux Fan Local.
-Handles UI setup, discovering devices, and testing the MQTT connection.
-"""
 from dataclasses import dataclass
 from typing import Any
 

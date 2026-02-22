@@ -1,9 +1,8 @@
-import logging
-
 """
 Binary sensor platform for the Duux Fan Local integration.
 Dynamically creates BinarySensorEntities based on the device profile.
 """
+import logging
 from typing import Any
 
 from homeassistant.components.binary_sensor import (

@@ -1,9 +1,8 @@
-import logging
-
 """
 Sensor platform for the Duux Fan Local integration.
 Dynamically creates SensorEntities based on the device profile.
 """
+import logging
 from typing import Any
 
 from homeassistant.components.sensor import (
