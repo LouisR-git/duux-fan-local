@@ -14,15 +14,26 @@ No cloud. No account. No lag.
 
 ## 📌 Supported models
 
-This integration has been tested and validated on the following models:
+This integration has been completely overhauled to support a flexible Device Profile architecture. It currently officially supports:
 
-- **Duux Whisper Flex**
-- **Duux Whisper Flex 2**
+- **Duux Whisper Flex** (Fan)
+- **Duux Whisper Flex 2** (Fan)
+- **Duux Bright 2** (Air Purifier)
 
-The integration automatically adapts to your fan's capabilities based on the selected generation. It supports power, speed, modes, and horizontal/vertical oscillation... See the `Supported Features/Models` section below for details.
+The integration automatically adapts to your device's capabilities based on the selected generation.
 
-Other models may work but are not officially supported.
-Please contribute your feedback to help improve compatibility.
+### Expansion to the full Duux Range
+
+The new architecture is designed to easily embrace the entire Duux product family. If you own any of the following devices that connect to the Duux Cloud, you can help add support by providing its MQTT payloads:
+
+- Dehumidifiers
+- Heaters
+- Fans
+- Humidifiers
+- Air Purifiers
+- Air Conditioners
+
+Feel free to open an Issue or a Pull Request with your device's specifications!
 
 ## 🧩 Installation via HACS
 
@@ -130,6 +141,18 @@ Unplug → remove the battery → wait ~1 second → reinsert → power on.
 | **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
 | **Battery Level**   | `batlvl` | N/A                 | `0` to `10`                            |
 | **Charging Status** | `batcha` | N/A                 | `0`: not charging , `1`: charging      |
+
+### Duux Bright 2
+| Feature             |   Key    | Command Payload     | Value X=                               |
+|---------------------|----------|---------------------|----------------------------------------|
+| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
+| **Night Mode**      | `night`  | `tune set mode X`   | `0`: normal, `1`: night mode           |
+| **Speed**           | `speed`  | `tune set speed X`  | `0` to `4` (0 is auto)                 |
+| **ION Setting**     | `ion`    | `tune set ion X`    | `0`: off, `1`: on                      |
+| **Filter Life**     | `filter` | N/A                 | `0` to `100` (%)                       |
+| **PPM 10**          | `ppm`    | N/A                 | µg/m³                                  |
+| **Air Quality**     | `AQ`     | N/A                 | AQI value                              |
+| **TVOC**            | `TVOC`   | N/A                 | µg/m³                                  |
 
 ### Known Issues
 
