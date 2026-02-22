@@ -1,3 +1,8 @@
+"""
+The Duux Fan Local integration.
+This module sets up the integration and handles the migration of older configuration entries.
+"""
+
 from __future__ import annotations
 import logging
 
@@ -18,6 +23,22 @@ PLATFORMS: list[Platform] = [
     Platform.SELECT,
     Platform.BINARY_SENSOR,
 ]
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+        new_data = {**config_entry.data}
+        # Ensure model is set if it was missing in very old entries
+        if "model" not in new_data:
+            new_data["model"] = "whisper_flex_2"
+
+        hass.config_entries.async_update_entry(config_entry, data=new_data, version=2)
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

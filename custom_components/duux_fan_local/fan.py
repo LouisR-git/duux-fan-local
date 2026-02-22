@@ -1,3 +1,8 @@
+"""
+Fan platform for the Duux Fan Local integration.
+Dynamically creates a FanEntity based on the device profile capabilities.
+"""
+
 import logging
 from typing import Any
 
@@ -10,18 +15,8 @@ from homeassistant.util.percentage import (
     ranged_value_to_percentage,
 )
 
-from .const import (
-    DOMAIN,
-    MANUFACTURER,
-    MODELS,
-    MODEL_V1,
-    ATTR_POWER,
-    ATTR_SPEED,
-    ATTR_SWING,
-    ATTR_TILT,
-    MAX_SPEED_V1,
-    MAX_SPEED_V2,
-)
+from .const import DOMAIN, MANUFACTURER, MODELS
+from .devices import DEVICE_PROFILES, ATTR_POWER, ATTR_SPEED, ATTR_SWING, ATTR_TILT
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,12 +31,15 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get(
-        "model", "whisper_flex_2"
-    )  # Default to v2 for backward compatibility
+    model = config_entry.data.get("model", "whisper_flex_2")
+
+    profile = DEVICE_PROFILES.get(model)
+    if not profile or "fan" not in profile:
+        _LOGGER.debug("Model %s does not support a fan entity.", model)
+        return
 
     fan = [
-        DuuxFan(client, device_id, base_name, model),
+        DuuxFan(client, device_id, base_name, model, profile),
     ]
     async_add_entities(fan)
 
@@ -57,12 +55,15 @@ class DuuxFan(FanEntity):
         device_id: str,
         base_name: str,
         model: str,
+        profile: dict,
     ) -> None:
         """Initialize the fan entity."""
         self._client = client
         self._name = base_name
         self._device_id = device_id
         self._model = model
+        self._profile = profile
+        self._fan_profile = profile["fan"]
 
         self._attr_name = base_name
         self._attr_unique_id = f"{DOMAIN}_{device_id}_fan"
@@ -70,26 +71,29 @@ class DuuxFan(FanEntity):
         self._attr_is_on = False
         self._speed = 0
         self._oscillating = False
-        self._direction = "forward"  # Default direction
+        self._direction = "forward"
 
-        # Set speed range based on model
-        self._max_speed = MAX_SPEED_V1 if model == MODEL_V1 else MAX_SPEED_V2
+        self._max_speed = self._fan_profile.get("max_speed", 100)
         self._speed_range = (1, self._max_speed)
 
-        # Set supported features based on model
-        supported_features = (
-            FanEntityFeature.TURN_ON
-            | FanEntityFeature.TURN_OFF
-            | FanEntityFeature.SET_SPEED
-        )
-
-        # V1 fans support simple oscillation and direction
-        if model == MODEL_V1:
-            supported_features |= (
-                FanEntityFeature.OSCILLATE | FanEntityFeature.DIRECTION
-            )
+        features = self._fan_profile.get("supported_features", [])
+        supported_features = FanEntityFeature(0)
+        if "turn_on" in features:
+            supported_features |= FanEntityFeature.TURN_ON
+        if "turn_off" in features:
+            supported_features |= FanEntityFeature.TURN_OFF
+        if "set_speed" in features:
+            supported_features |= FanEntityFeature.SET_SPEED
+        if "oscillate" in features:
+            supported_features |= FanEntityFeature.OSCILLATE
+        if "direction" in features:
+            supported_features |= FanEntityFeature.DIRECTION
 
         self._attr_supported_features = supported_features
+
+        # Determine keys for power and speed based on profile
+        self._power_key = self._fan_profile.get("power_key", ATTR_POWER)
+        self._speed_key = self._fan_profile.get("speed_key", ATTR_SPEED)
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -98,7 +102,7 @@ class DuuxFan(FanEntity):
             "identifiers": {(DOMAIN, self._device_id)},
             "name": self._name,
             "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model),
+            "model": MODELS.get(self._model, self._model),
             "connections": {("mac", self._device_id)},
         }
 
@@ -109,7 +113,11 @@ class DuuxFan(FanEntity):
     @property
     def percentage(self) -> int | None:
         """Return the current speed percentage."""
-        return ranged_value_to_percentage(self._speed_range, self._speed)
+        return (
+            ranged_value_to_percentage(self._speed_range, self._speed)
+            if self._speed
+            else 0
+        )
 
     @property
     def oscillating(self) -> bool:
@@ -141,19 +149,14 @@ class DuuxFan(FanEntity):
 
     async def async_oscillate(self, oscillating: bool) -> None:
         """Turn oscillation on or off."""
-        if self._model == MODEL_V1:
-            # V1 fans use swing for horizontal oscillation
+        if "oscillate" in self._fan_profile.get("supported_features", []):
             await self._async_publish(f"tune set swing {1 if oscillating else 0}")
-        # V2 fans don't support simple oscillation (they use select entities with angles)
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
-        if self._model == MODEL_V1:
-            # V1 fans use tilt for vertical oscillation/direction
-            # Map direction to tilt: forward = off, reverse = on
+        if "direction" in self._fan_profile.get("supported_features", []):
             tilt_value = 1 if direction == "reverse" else 0
             await self._async_publish(f"tune set tilt {tilt_value}")
-        # V2 fans don't support simple direction (they use select entities with angles)
 
     async def _async_publish(self, payload: str) -> None:
         """Publish a command to the MQTT topic."""
@@ -162,14 +165,13 @@ class DuuxFan(FanEntity):
     @callback
     def _update_state(self, fan_data: dict[str, Any]) -> None:
         """Update the entity's state from parsed MQTT data."""
-        self._attr_is_on = fan_data.get(ATTR_POWER) == 1
-        self._speed = fan_data.get(ATTR_SPEED)
+        self._attr_is_on = fan_data.get(self._power_key) == 1
+        self._speed = fan_data.get(self._speed_key, 0)
 
-        # Update oscillation and direction state for V1 fans
-        if self._model == MODEL_V1:
-            # Swing represents horizontal oscillation
+        if "oscillate" in self._fan_profile.get("supported_features", []):
             self._oscillating = fan_data.get(ATTR_SWING, 0) == 1
-            # Tilt represents vertical oscillation/direction
+
+        if "direction" in self._fan_profile.get("supported_features", []):
             self._direction = (
                 "reverse" if fan_data.get(ATTR_TILT, 0) == 1 else "forward"
             )

@@ -1,3 +1,8 @@
+"""
+MQTT client manager for the Duux Fan Local integration.
+Handles the connection to the custom broker and parses incoming state payloads.
+"""
+
 import json
 import logging
 import ssl
@@ -77,6 +82,14 @@ class DuuxMqttClient:
             data = json.loads(msg.payload)
             _LOGGER.debug("Received message on %s: %s", msg.topic, data)
             fan_data = data.get("sub", {}).get("Tune", [{}])[0]
+
+            # Some models like Bright 2 nest the payload again under "sub"
+            if (
+                isinstance(fan_data, dict)
+                and "sub" in fan_data
+                and "Tune" in fan_data["sub"]
+            ):
+                fan_data = fan_data["sub"]["Tune"][0]
 
             if isinstance(fan_data, dict) and fan_data:
                 for update_callback in self._callbacks:

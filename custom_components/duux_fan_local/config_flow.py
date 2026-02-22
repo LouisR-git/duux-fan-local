@@ -1,8 +1,15 @@
 """Config flow for Duux Fan."""
+
 from __future__ import annotations
 import logging
 import ssl
 import threading
+
+"""
+Configuration flow for Duux Fan Local.
+Handles UI setup, discovering devices, and testing the MQTT connection.
+"""
+from dataclasses import dataclass
 from typing import Any
 
 import voluptuous as vol
@@ -50,9 +57,16 @@ def test_broker_connection(username: str | None, password: str | None) -> bool:
         return False
 
 
-def test_device_connection(
-    device_id: str, username: str | None, password: str | None
-) -> bool:
+@dataclass
+class MqttCredentials:
+    """MQTT connection credentials."""
+
+    device_id: str
+    username: str | None = None
+    password: str | None = None
+
+
+def test_device_connection(credentials: MqttCredentials) -> bool:
     """Tests the connection to the Duux MQTT broker by listening for a message."""
     import paho.mqtt.client as mqtt
 
@@ -60,7 +74,7 @@ def test_device_connection(
 
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            client.subscribe(TOPIC_STATE.format(device_id=device_id))
+            client.subscribe(TOPIC_STATE.format(device_id=credentials.device_id))
         else:
             connection_event.set()
 
@@ -68,8 +82,8 @@ def test_device_connection(
         connection_event.set()
 
     client = mqtt.Client()
-    if username:
-        client.username_pw_set(username, password)
+    if credentials.username:
+        client.username_pw_set(credentials.username, credentials.password)
     client.on_connect = on_connect
     client.on_message = on_message
 
@@ -98,7 +112,7 @@ def test_device_connection(
 class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Duux Fan."""
 
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self) -> None:
         """Initialize the config flow."""
@@ -147,24 +161,19 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(user_input[CONF_DEVICE_ID])
             self._abort_if_unique_id_configured()
 
+            credentials = MqttCredentials(
+                device_id=user_input[CONF_DEVICE_ID],
+                username=self._username,
+                password=self._password,
+            )
+
             is_connected = await self.hass.async_add_executor_job(
                 test_device_connection,
-                user_input[CONF_DEVICE_ID],
-                self._username,
-                self._password,
+                credentials,
             )
 
             if is_connected:
-                data = {
-                    CONF_MODEL: user_input[CONF_MODEL],
-                    CONF_NAME: user_input[CONF_NAME],
-                    CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
-                }
-                if self._username:
-                    data[CONF_USERNAME] = self._username
-                if self._password:
-                    data[CONF_PASSWORD] = self._password
-                return self.async_create_entry(title=user_input[CONF_NAME], data=data)
+                return self._create_device_entry(user_input)
 
             errors["base"] = "cannot_connect"
 
@@ -179,3 +188,16 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="device", data_schema=data_schema, errors=errors
         )
+
+    def _create_device_entry(self, user_input: dict[str, Any]) -> FlowResult:
+        """Create the config entry after a successful connection."""
+        data = {
+            CONF_MODEL: user_input[CONF_MODEL],
+            CONF_NAME: user_input[CONF_NAME],
+            CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
+        }
+        if self._username:
+            data[CONF_USERNAME] = self._username
+        if self._password:
+            data[CONF_PASSWORD] = self._password
+        return self.async_create_entry(title=user_input[CONF_NAME], data=data)

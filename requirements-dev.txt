@@ -1,2 +1,5 @@
 homeassistant
 pre-commit
+pytest
+pytest-asyncio
+pytest-homeassistant-custom-component
