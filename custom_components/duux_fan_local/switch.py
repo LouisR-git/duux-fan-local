@@ -1,3 +1,8 @@
+"""
+Switch platform for the Duux Fan Local integration.
+Dynamically creates SwitchEntities (e.g., Night Mode, ION) based on the device profile.
+"""
+
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity
@@ -5,54 +10,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import (
-    DOMAIN,
-    MANUFACTURER,
-    MODELS,
-    MODEL_V1,
-    ATTR_NIGHT_MODE,
-    ATTR_CHILD_LOCK,
-    ATTR_SWING,
-    ATTR_TILT,
-)
+from .const import DOMAIN, MANUFACTURER, MODELS
+from .devices import DEVICE_PROFILES
 from .mqtt import DuuxMqttClient
-
-SWITCH_TYPES = {
-    "night_mode": {
-        "name": "Night Mode",
-        "command_on": "tune set night 1",
-        "command_off": "tune set night 0",
-        "state_key": ATTR_NIGHT_MODE,
-        "icon": "mdi:weather-night",
-        "entity_category": None,
-    },
-    "child_lock": {
-        "name": "Child Lock",
-        "command_on": "tune set lock 1",
-        "command_off": "tune set lock 0",
-        "state_key": ATTR_CHILD_LOCK,
-        "icon": "mdi:account-lock",
-        "entity_category": None,
-    },
-    "horizontal_oscillation_v1": {
-        "name": "Horizontal Oscillation",
-        "command_on": "tune set swing 1",
-        "command_off": "tune set swing 0",
-        "state_key": ATTR_SWING,
-        "icon": "mdi:arrow-left-right",
-        "entity_category": None,
-        "model_specific": MODEL_V1,
-    },
-    "vertical_oscillation_v1": {
-        "name": "Vertical Oscillation",
-        "command_on": "tune set tilt 1",
-        "command_off": "tune set tilt 0",
-        "state_key": ATTR_TILT,
-        "icon": "mdi:arrow-up-down",
-        "entity_category": None,
-        "model_specific": MODEL_V1,
-    },
-}
 
 
 async def async_setup_entry(
@@ -64,29 +24,16 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get(
-        "model", "whisper_flex_2"
-    )  # Default to v2 for backward compatibility
+    model = config_entry.data.get("model", "whisper_flex_2")
+
+    profile = DEVICE_PROFILES.get(model)
+    if not profile or "switches" not in profile:
+        return
 
     switches = []
-
-    # Only add switches that are supported by the model
-    for switch_type, details in SWITCH_TYPES.items():
-        # Skip child lock and night mode for V1 fans
-        if model == MODEL_V1 and switch_type in ["child_lock", "night_mode"]:
-            continue
-
-        # Only add V1 specific oscillation switches for V1 model
-        if switch_type in ["horizontal_oscillation_v1", "vertical_oscillation_v1"]:
-            if model != MODEL_V1:
-                continue
-
-        # Only add V2 specific switches for V2 model (none currently, but structure for future)
-        if "model_specific" in details and details["model_specific"] != model:
-            continue
-
+    for switch_id, details in profile["switches"].items():
         switches.append(
-            DuuxSwitch(client, device_id, base_name, model, switch_type, details)
+            DuuxSwitch(client, device_id, base_name, model, switch_id, details)
         )
 
     async_add_entities(switches)
@@ -103,7 +50,7 @@ class DuuxSwitch(SwitchEntity):
         device_id: str,
         base_name: str,
         model: str,
-        switch_type: str,
+        switch_id: str,
         details: dict[str, Any],
     ) -> None:
         """Initialize the switch."""
@@ -112,14 +59,14 @@ class DuuxSwitch(SwitchEntity):
         self._device_id = device_id
         self._name = base_name
         self._model = model
-        self._switch_type = switch_type
+        self._switch_id = switch_id
 
         self._attr_name = f"{base_name} {details['name']}"
-        self._attr_unique_id = f"{DOMAIN}_{device_id}_{switch_type}"
+        self._attr_unique_id = f"{DOMAIN}_{device_id}_{switch_id}"
         self.entity_id = f"switch.{self._attr_name.lower().replace(' ', '_')}"
         self._attr_is_on = False
-        self._attr_icon = details["icon"]
-        self._attr_entity_category = details["entity_category"]
+        self._attr_icon = details.get("icon")
+        self._attr_entity_category = details.get("entity_category")
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -128,7 +75,7 @@ class DuuxSwitch(SwitchEntity):
             "identifiers": {(DOMAIN, self._device_id)},
             "name": self._name,
             "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model),
+            "model": MODELS.get(self._model, self._model),
             "connections": {("mac", self._device_id)},
         }
 

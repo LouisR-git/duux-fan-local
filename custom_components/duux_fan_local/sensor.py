@@ -1,4 +1,9 @@
 import logging
+
+"""
+Sensor platform for the Duux Fan Local integration.
+Dynamically creates SensorEntities based on the device profile.
+"""
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -9,9 +14,9 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.const import PERCENTAGE
 
-from .const import DOMAIN, MANUFACTURER, MODELS, MODEL_V1, ATTR_BATLVL
+from .const import DOMAIN, MANUFACTURER, MODELS
+from .devices import DEVICE_PROFILES
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,32 +31,25 @@ async def async_setup_entry(
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
-    model = config_entry.data.get("model", "whisper_flex_2")  # Default to V2
+    model = config_entry.data.get("model", "whisper_flex_2")
+
+    profile = DEVICE_PROFILES.get(model)
+    if not profile or "sensors" not in profile:
+        return
 
     sensors = []
-
-    # Only add battery sensor for V2 fans
-    if model != MODEL_V1:
+    for sensor_id, details in profile["sensors"].items():
         sensors.append(
-            DuuxBatteryLevelSensor(
-                client=client,
-                device_id=device_id,
-                base_name=base_name,
-                model=model,
-            )
+            DuuxSensor(client, device_id, base_name, model, sensor_id, details)
         )
 
     async_add_entities(sensors)
 
 
-class DuuxBatteryLevelSensor(SensorEntity):
-    """Representation of a Duux Fan Battery Level sensor."""
+class DuuxSensor(SensorEntity):
+    """Representation of a Duux Fan Sensor."""
 
     _attr_should_poll = False
-    _attr_device_class = SensorDeviceClass.BATTERY
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_native_unit_of_measurement = PERCENTAGE
-    _attr_icon = "mdi:battery"
 
     def __init__(
         self,
@@ -59,17 +57,32 @@ class DuuxBatteryLevelSensor(SensorEntity):
         device_id: str,
         base_name: str,
         model: str,
+        sensor_id: str,
+        details: dict,
     ) -> None:
         """Initialize the sensor."""
         self._client = client
         self._device_id = device_id
         self._name = base_name
         self._model = model
+        self._sensor_id = sensor_id
+        self._details = details
 
-        self._attr_name = f"{base_name} Battery Level"
-        self._attr_unique_id = f"{DOMAIN}_{device_id}_battery_level"
-        self.entity_id = f"sensor.{base_name.lower().replace(' ', '_')}_battery_level"
+        self._attr_name = f"{base_name} {details['name']}"
+        self._attr_unique_id = f"{DOMAIN}_{device_id}_{sensor_id}"
+        self.entity_id = f"sensor.{self._attr_name.lower().replace(' ', '_')}"
         self._attr_native_value = None
+
+        if "device_class" in details and details["device_class"]:
+            self._attr_device_class = SensorDeviceClass(details["device_class"])
+        if "state_class" in details and details["state_class"]:
+            self._attr_state_class = getattr(
+                SensorStateClass, details["state_class"].upper(), None
+            )
+        if "unit" in details and details["unit"]:
+            self._attr_native_unit_of_measurement = details["unit"]
+        if "icon" in details and details["icon"]:
+            self._attr_icon = details["icon"]
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -78,15 +91,20 @@ class DuuxBatteryLevelSensor(SensorEntity):
             "identifiers": {(DOMAIN, self._device_id)},
             "name": self._name,
             "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model),
+            "model": MODELS.get(self._model, self._model),
             "connections": {("mac", self._device_id)},
         }
 
     @callback
     def _update_state(self, fan_data: dict[str, Any]) -> None:
         """Update the entity's state from parsed MQTT data."""
-        self._attr_native_value = fan_data.get(ATTR_BATLVL, 0) * 10
-        self.async_write_ha_state()
+        state_key = self._details["state_key"]
+        val = fan_data.get(state_key)
+
+        if val is not None:
+            multiplier = self._details.get("multiplier", 1)
+            self._attr_native_value = val * multiplier
+            self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:
         """Run when entity is added to hass."""
