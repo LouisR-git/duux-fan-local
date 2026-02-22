@@ -120,5 +120,3 @@ Restart the service to apply configuration :
 ```
 systemctl restart nftables
 ```
-
-
