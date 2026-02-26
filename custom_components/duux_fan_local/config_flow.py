@@ -20,6 +20,8 @@ from .const import (
     DOMAIN,
     CONF_DEVICE_ID,
     CONF_MODEL,
+    CONF_MQTT_HOST,
+    CONF_MQTT_PORT,
     MODELS,
     MQTT_HOST,
     MQTT_PORT,
@@ -30,7 +32,9 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-def test_broker_connection(username: str | None, password: str | None) -> bool:
+def test_broker_connection(
+    username: str | None, password: str | None, host: str, port: int
+) -> bool:
     """Test connection to the MQTT broker."""
     import paho.mqtt.client as mqtt
 
@@ -39,7 +43,7 @@ def test_broker_connection(username: str | None, password: str | None) -> bool:
         client.username_pw_set(username, password)
     client.tls_set(cert_reqs=ssl.CERT_NONE)
     try:
-        client.connect(MQTT_HOST, MQTT_PORT, 60)
+        client.connect(host, port, 60)
         client.disconnect()
         return True
     except (OSError, ConnectionRefusedError) as e:
@@ -62,6 +66,8 @@ class MqttCredentials:
     device_id: str
     username: str | None = None
     password: str | None = None
+    host: str = MQTT_HOST
+    port: int = MQTT_PORT
 
 
 def test_device_connection(credentials: MqttCredentials) -> bool:
@@ -88,7 +94,7 @@ def test_device_connection(credentials: MqttCredentials) -> bool:
     client.tls_set(cert_reqs=ssl.CERT_NONE)
 
     try:
-        client.connect(MQTT_HOST, MQTT_PORT, 60)
+        client.connect(credentials.host, credentials.port, 60)
         client.loop_start()
         connected = connection_event.wait(timeout=MQTT_TIMEOUT)
         client.loop_stop()
@@ -116,6 +122,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Initialize the config flow."""
         self._username: str | None = None
         self._password: str | None = None
+        self._mqtt_host: str = MQTT_HOST
+        self._mqtt_port: int = MQTT_PORT
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -126,9 +134,15 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self._username = user_input.get(CONF_USERNAME)
             self._password = user_input.get(CONF_PASSWORD)
+            self._mqtt_host = user_input.get(CONF_MQTT_HOST, MQTT_HOST)
+            self._mqtt_port = user_input.get(CONF_MQTT_PORT, MQTT_PORT)
 
             is_connected = await self.hass.async_add_executor_job(
-                test_broker_connection, self._username, self._password
+                test_broker_connection,
+                self._username,
+                self._password,
+                self._mqtt_host,
+                self._mqtt_port,
             )
 
             if is_connected:
@@ -140,6 +154,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 vol.Optional(CONF_USERNAME): str,
                 vol.Optional(CONF_PASSWORD): str,
+                vol.Optional(CONF_MQTT_HOST, default=MQTT_HOST): str,
+                vol.Optional(CONF_MQTT_PORT, default=MQTT_PORT): int,
             }
         )
 
@@ -163,6 +179,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 device_id=user_input[CONF_DEVICE_ID],
                 username=self._username,
                 password=self._password,
+                host=self._mqtt_host,
+                port=self._mqtt_port,
             )
 
             is_connected = await self.hass.async_add_executor_job(
@@ -193,6 +211,8 @@ class DuuxFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_MODEL: user_input[CONF_MODEL],
             CONF_NAME: user_input[CONF_NAME],
             CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
+            CONF_MQTT_HOST: self._mqtt_host,
+            CONF_MQTT_PORT: self._mqtt_port,
         }
         if self._username:
             data[CONF_USERNAME] = self._username

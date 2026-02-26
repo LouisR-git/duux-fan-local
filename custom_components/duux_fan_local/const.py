@@ -5,6 +5,8 @@ DOMAIN = "duux_fan_local"
 # Configuration keys
 CONF_DEVICE_ID = "device_id"
 CONF_MODEL = "model"
+CONF_MQTT_HOST = "mqtt_host"
+CONF_MQTT_PORT = "mqtt_port"
 MANUFACTURER = "Duux"
 
 # Generate MODELS dynamically from DEVICE_PROFILES
@@ -18,4 +20,3 @@ MQTT_TIMEOUT = 10
 # Topics
 TOPIC_COMMAND = "sensor/{device_id}/command"
 TOPIC_STATE = "sensor/{device_id}/in"
-# Model versions (Legacy, kept for some components until fully migrated)
