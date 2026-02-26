@@ -9,7 +9,7 @@ labels: 'enhancement, new-device'
 - **Device Type**: (e.g. Fan, Heater, Humidifier, Air Purifier)
 
 ## 📡 MQTT Payload Capture
-To add support for your device, we need to know how it communicates. 
+To add support for your device, we need to know how it communicates.
 Please connect to your local MQTT broker using a tool like [MQTT Explorer](http://mqtt-explorer.com/) and subscribe to the `#` topic.
 
 ### 1. State Payload (Topics: `sensor/<device_id>/in`)
