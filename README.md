@@ -12,7 +12,7 @@ This project allows you to use your **Duux smart devices** (fans, air purifiers,
 
 No cloud. No account. No lag.
 
-## 📌 Supported devices
+## Supported devices
 
 This integration uses a flexible Device Profile architecture designed to easily embrace the entire Duux product family.
 
@@ -22,12 +22,12 @@ This integration uses a flexible Device Profile architecture designed to easily 
 - **Duux Bright 2** (Air Purifier)
 
 
-### 🚀 Help expand support
+### Help expand support
 
 If you own any other devices that connect to the Duux Cloud (Dehumidifiers, Heaters, other Fans/Humidifiers/Purifiers, Air Conditioners), you can help add support!
 Simply capture your device's MQTT payloads and open an Issue or a Pull Request with your device's specifications.
 
-## 🧩 Installation via HACS
+## Installation via HACS
 
 This integration is not (yet) available in the official HACS default repository list.
 However, you can easily add it as a **custom repository**:
@@ -65,7 +65,7 @@ The integration will now appear like any standard Home Assistant integration.
 ![fan](docs/screenshots/fan_entity.png)
 ![sensors](docs/screenshots/sensors.png)
 
-## 🧰 Prerequisites
+## Prerequisites
 
 Duux devices communicate with the cloud using **MQTT over TLS**.
 By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the devices directly into Home Assistant.
@@ -76,7 +76,7 @@ You’ll need:
 - **A self-hosted MQTT broker**, default reachable as `collector3.cloudgarden.nl` on port 443 (can be customized during integration setup)
 - Basic Linux CLI knowledge
 
-## 🌐 Local DNS spoofing
+## Local DNS spoofing
 
 From your local DNS server, redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
 ```
@@ -95,7 +95,7 @@ Go to Console → Settings → Policy Engine → DNS → Create a new `Host (A)`
 Unplug → remove the battery (if applicable) → wait ~1 second → reinsert → power on.
 
 
-## ⚙️ Setting up a local MQTT broker
+## Setting up a local MQTT broker
 
 ### Option A - EMQX (TLS + Authentication) - **Recommended**
 - **Goal:** A robust local setup with TLS encryption and username/password authentication.
@@ -108,7 +108,7 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 
 
 
-## 📋 Supported Features/Models
+## Supported Features/Models
 
 ### Whisper Flex
 
@@ -155,7 +155,7 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
    This is a **firmware limitation**.
 
 
-## 📡 Details
+## Details
 
 The devices use MQTT topics to report their state and receive commands.
 
@@ -184,7 +184,7 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/fw`        | _(Unused)_                  |
 
 
-## ✅ Result
+## Result
 
 Your Duux device is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
 Enjoy full privacy, instant response times, and true independence from proprietary services.
@@ -192,13 +192,7 @@ Enjoy full privacy, instant response times, and true independence from proprieta
 > **Note:** When connected to your local MQTT, the device will no longer be able to receive firmware updates from the manufacturer.
 > Disable local DNS forwarding and restart your device to access the web again.
 
-## 🛑 Disclaimer
-
-This setup **spoofs a cloud domain** and runs services on privileged ports. Use only in **lab environments** or **isolated networks**.
-For educational and interoperability purposes only.
-
-
-## 🙌 Credits
+## Credits
 
 Based on reverse engineering, packet sniffing, vibe coding ~~and a lot of fan noise~~.
 A special thanks to the Home Assistant community for their valuable insights and contributions, especially the discussion in [this topic][ha-forum-duux-topic] which greatly helped this integration.
