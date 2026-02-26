@@ -1,35 +1,38 @@
 ---
-name: New fan support request
-about: Request the addition of a new fan model to the integration
+name: New device support request
+about: Request the addition of a new Duux device (Fan, Purifier, Heater...) to the integration
+labels: 'enhancement, new-device'
 ---
 
-**Fan model and brand**
-Provide the exact model name of the fan (including any version/revision if available).
+## 📱 Device Information
+- **Exact Model Name**: (e.g. Duux Whisper Flex Ultimate, Duux Threesixty 2)
+- **Device Type**: (e.g. Fan, Heater, Humidifier, Air Purifier)
 
-**Endpoint verification**
-- Provide the API/cloud endpoint URL: `mqtts://collector3.cloudgarden.nl:443`
-- Confirm the endpoint is reachable: Yes/No
-- Attach a sample API or MQTT connection log if possible.
+## 📡 MQTT Payload Capture
+To add support for your device, we need to know how it communicates. 
+Please connect to your local MQTT broker using a tool like [MQTT Explorer](http://mqtt-explorer.com/) and subscribe to the `#` topic.
 
-**Local MQTT broker check**
-- Connect your fan to a local MQTT broker following the install steps in the README.
-- Confirm the device is connected to the local broker: Yes/No
-- Provide evidence (e.g., MQTT Explorer screenshot or CLI output).
+### 1. State Payload (Topics: `sensor/<device_id>/in`)
+When your device connects or changes state (e.g., when you press a button on it), it sends a JSON payload. Please paste a copy of this payload here:
+```json
+// Paste the payload from sensor/.../in here
+```
 
-**MQTT topics**
-List all relevant topics used by the fan :
+### 2. Supported Commands
+Using the official Duux app (while sniffing MQTT traffic), change the state of your device (turn it on, change speed, change mode, etc.) and record the commands sent to the `sensor/<device_id>/command` topic.
 
-Example table format (replace with your fan’s real topics):
+List the commands you found below:
 
-| Feature   | Key      | Command Payload       | Values                               |
-|-----------|----------|-----------------------|--------------------------------------|
-| Power     | `power`  | `tune set power X`    | `0`: off, `1`: on                    |
-| Mode      | `mode`   | `tune set mode X`     | `0`: fan mode, `1`: natural wind     |
-| Speed     | `speed`  | `tune set speed X`    | `1` to `30`                          |
+| Feature being changed | Command Payload observed | Value meaning |
+|-----------------------|--------------------------|---------------|
+| Power                 | `tune set power 1`       | `0`: off, `1`: on |
+| Example: Speed        | `tune set speed 5`       | `1` to `30`   |
+| ...                   | ...                      | ...           |
 
-**Testing**
-- Confirm that publishing to the command topics changes the fan state.
-- Confirm that state topics update correctly after commands.
+## 🧪 Testing Check
+- [ ] I have successfully routed my device's DNS to my local MQTT broker.
+- [ ] I can see my device connecting to my local broker.
+- [ ] I have verified that publishing the commands listed above actually controls the device.
 
-**Additional context**
-Add any other details, screenshots, logs, or packet captures that may help in the integration.
+## 📝 Additional context
+Add any other details, screenshots, logs, or quirks about this device.

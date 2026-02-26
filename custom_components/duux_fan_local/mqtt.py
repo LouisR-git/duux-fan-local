@@ -14,6 +14,8 @@ from homeassistant.core import HomeAssistant
 
 from .const import (
     CONF_DEVICE_ID,
+    CONF_MQTT_HOST,
+    CONF_MQTT_PORT,
     MQTT_HOST,
     MQTT_PORT,
     TOPIC_COMMAND,
@@ -36,6 +38,8 @@ class DuuxMqttClient:
         self.state_topic = TOPIC_STATE.format(device_id=self.device_id)
         self._username = config.get(CONF_USERNAME)
         self._password = config.get(CONF_PASSWORD)
+        self._mqtt_host = config.get(CONF_MQTT_HOST, MQTT_HOST)
+        self._mqtt_port = config.get(CONF_MQTT_PORT, MQTT_PORT)
         self._callbacks = []
         self._client = mqtt.Client()
         self._client.on_connect = self.on_connect
@@ -49,7 +53,7 @@ class DuuxMqttClient:
             if self._username:
                 self._client.username_pw_set(self._username, self._password)
             self._client.tls_set(cert_reqs=ssl.CERT_NONE)
-            self._client.connect(MQTT_HOST, MQTT_PORT, 60)
+            self._client.connect(self._mqtt_host, self._mqtt_port, 60)
 
         try:
             await loop.run_in_executor(None, configure_tls_and_connect)

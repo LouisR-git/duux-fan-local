@@ -304,13 +304,13 @@ DEVICE_PROFILES = {
                 "icon": "mdi:air-filter",
                 "multiplier": 1,
             },
-            "ppm_10": {
-                "name": "PPM 10",
+            "pm_10": {
+                "name": "PM10",
                 "state_key": ATTR_PPM,
                 "device_class": "pm10",
                 "state_class": "measurement",
                 "unit": "µg/m³",
-                "icon": "mdi:air-purifier",
+                "icon": "mdi:molecule",
                 "multiplier": 1,
             },
             "air_quality": {
@@ -328,7 +328,7 @@ DEVICE_PROFILES = {
                 "device_class": "volatile_organic_compounds",
                 "state_class": "measurement",
                 "unit": "µg/m³",
-                "icon": "mdi:air-filter",
+                "icon": "mdi:molecule",
                 "multiplier": 1,
             },
         },

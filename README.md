@@ -4,36 +4,28 @@
 [![pre-commit][pre-commit-shield]][pre-commit]
 [![Black][black-shield]][black]
 
-# 🌀 Duux Fan - Local integration for Home Assistant
+# 🌀 Duux Local - Home Assistant Integration
 
-**Take back control of your Duux fan - locally, privately, and cloud-free.**
+**Take back control of your Duux smart devices - locally, privately, and cloud-free.**
 
-This project allows you to use your **Duux Whisper Flex smart fan** entirely outside of Duux’s cloud ecosystem by redirecting its MQTT communication to a **local broker**, giving you **full local control** via **Home Assistant**.
+This project allows you to use your **Duux smart devices** (fans, air purifiers, heaters, humidifiers, etc.) entirely outside of Duux’s cloud ecosystem by redirecting their MQTT communication to a **local broker**, giving you **full local control** via **Home Assistant**.
 
 No cloud. No account. No lag.
 
-## 📌 Supported models
+## 📌 Supported devices
 
-This integration has been completely overhauled to support a flexible Device Profile architecture. It currently officially supports:
+This integration uses a flexible Device Profile architecture designed to easily embrace the entire Duux product family.
 
+**Currently officially supported:**
 - **Duux Whisper Flex** (Fan)
 - **Duux Whisper Flex 2** (Fan)
 - **Duux Bright 2** (Air Purifier)
 
-The integration automatically adapts to your device's capabilities based on the selected generation.
 
-### Expansion to the full Duux Range
+### 🚀 Help expand support
 
-The new architecture is designed to easily embrace the entire Duux product family. If you own any of the following devices that connect to the Duux Cloud, you can help add support by providing its MQTT payloads:
-
-- Dehumidifiers
-- Heaters
-- Fans
-- Humidifiers
-- Air Purifiers
-- Air Conditioners
-
-Feel free to open an Issue or a Pull Request with your device's specifications!
+If you own any other devices that connect to the Duux Cloud (Dehumidifiers, Heaters, other Fans/Humidifiers/Purifiers, Air Conditioners), you can help add support!
+Simply capture your device's MQTT payloads and open an Issue or a Pull Request with your device's specifications.
 
 ## 🧩 Installation via HACS
 
@@ -59,11 +51,12 @@ The integration will now appear like any standard Home Assistant integration.
    - ✅ **MQTT Broker** (Mosquitto, EMQX, ...)
 
 2. In Home Assistant, go to `Settings > Devices & Services > Add Integration` and search for `Duux Fan Local`.
-3. Select your fan model from the list.
-4. Give your device a friendly name.
-5. Enter the **MAC address** of your Duux fan
+3. Provide your **MQTT broker credentials** (or leave blank for anonymous) and adjust the **MQTT Host and Port** if necessary.
+4. Select your **device model** from the list.
+5. Give your device a friendly name.
+6. Enter the **MAC address** of your Duux device.
    > 💡 You can find it in your router’s connected devices list.
-6. Click **Submit** and enjoy local control of your fan!
+7. Click **Submit** and enjoy local control of your device!
 
 ### Screenshots
 
@@ -74,13 +67,13 @@ The integration will now appear like any standard Home Assistant integration.
 
 ## 🧰 Prerequisites
 
-Duux fans communicate with the cloud using **MQTT over TLS**.
-By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the fan directly into Home Assistant.
+Duux devices communicate with the cloud using **MQTT over TLS**.
+By spoofing the cloud hostname and running your own MQTT broker, you can intercept this traffic and integrate the devices directly into Home Assistant.
 
 You’ll need:
 
 - **Control over your local DNS resolution** (AdGuard, CoreDNS, dnsmasq…)
-- **A self-hosted MQTT broker**, reachable as `collector3.cloudgarden.nl` on port 443
+- **A self-hosted MQTT broker**, default reachable as `collector3.cloudgarden.nl` on port 443 (can be customized during integration setup)
 - Basic Linux CLI knowledge
 
 ## 🌐 Local DNS spoofing
@@ -98,8 +91,8 @@ Go to AdGuard → Settings → DNS Rewrites
 
 Go to Console → Settings → Policy Engine → DNS → Create a new `Host (A)` entry
 
-### Reboot the fan after DNS changes
-Unplug → remove the battery → wait ~1 second → reinsert → power on.
+### Reboot the device after DNS changes
+Unplug → remove the battery (if applicable) → wait ~1 second → reinsert → power on.
 
 
 ## ⚙️ Setting up a local MQTT broker
@@ -158,20 +151,20 @@ Unplug → remove the battery → wait ~1 second → reinsert → power on.
 ### Known Issues
 
 - **Charging Status** does not update automatically when the battery is fully charged.
-  The fan only refreshes this attribute when the Power state changes.
+  The device only refreshes this attribute when the Power state changes.
    This is a **firmware limitation**.
 
 
 ## 📡 Details
 
-The fan uses MQTT topics to report its state and receive commands.
+The devices use MQTT topics to report their state and receive commands.
 
-### MQTT Broker Endpoint
+### Default MQTT Broker Endpoint
 ```
 mqtts://collector3.cloudgarden.nl:443
 ```
 
-### Fan publishes to:
+### Device publishes to:
 
 | Topic                         | Example Payload                                                                 |
 |-------------------------------|---------------------------------------------------------------------------------|
@@ -179,10 +172,10 @@ mqtts://collector3.cloudgarden.nl:443
 | `sensor/{device_id}/online`   | `{"online":true,"connectionType":"mqtt"}`                                       |
 | `sensor/{device_id}/update`   | `{"pid":"xyz","tune":"DUUX Whisper Flex 2"}`                                    |
 
-> The fan publishes data immediately when a change occurs, and otherwise every 30 seconds to keep the online status active.
+> The device publishes data immediately when a change occurs, and otherwise every 30 seconds to keep the online status active.
 
 
-### Fan subscribes to:
+### Device subscribes to:
 
 | Topic                          | Example Payload             |
 |--------------------------------|-----------------------------|
@@ -193,11 +186,11 @@ mqtts://collector3.cloudgarden.nl:443
 
 ## ✅ Result
 
-Your Duux fan is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
+Your Duux device is now fully **cloud-free** and controllable through **your local network** and **Home Assistant**.
 Enjoy full privacy, instant response times, and true independence from proprietary services.
 
-> **Note:** When connected to your local MQTT, the fan will no longer be able to receive firmware updates from the manufacturer.
-> Disable local DNS forwarding and restart your fan to access the web again.
+> **Note:** When connected to your local MQTT, the device will no longer be able to receive firmware updates from the manufacturer.
+> Disable local DNS forwarding and restart your device to access the web again.
 
 ## 🛑 Disclaimer
 

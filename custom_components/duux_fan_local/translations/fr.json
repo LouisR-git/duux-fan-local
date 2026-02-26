@@ -3,10 +3,18 @@
         "step": {
             "user": {
                 "title": "Connexion au broker MQTT",
-                "description": "Laissez les champs vides pour une connexion anonyme.",
+                "description": "Veuillez saisir les détails de connexion à votre broker MQTT.",
                 "data": {
                     "username": "Nom d'utilisateur MQTT",
-                    "password": "Mot de passe MQTT"
+                    "password": "Mot de passe MQTT",
+                    "mqtt_host": "Hôte MQTT",
+                    "mqtt_port": "Port MQTT"
+                },
+                "data_description": {
+                    "username": "Laissez vide pour une connexion anonyme.",
+                    "password": "Laissez vide pour une connexion anonyme.",
+                    "mqtt_host": "Laissez par défaut sauf modification nécessaire.",
+                    "mqtt_port": "Laissez par défaut sauf modification nécessaire."
                 }
             },
             "device": {
