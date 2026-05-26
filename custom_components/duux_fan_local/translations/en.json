@@ -8,13 +8,15 @@
                     "username": "MQTT Username",
                     "password": "MQTT Password",
                     "mqtt_host": "MQTT Host",
-                    "mqtt_port": "MQTT Port"
+                    "mqtt_port": "MQTT Port",
+                    "use_tls": "Use TLS"
                 },
                 "data_description": {
                     "username": "Leave empty to connect anonymously.",
                     "password": "Leave empty to connect anonymously.",
                     "mqtt_host": "Leave as default unless you need to modify it.",
-                    "mqtt_port": "Leave as default unless you need to modify it."
+                    "mqtt_port": "Leave as default unless you need to modify it.",
+                    "use_tls": "Disable for a local broker without TLS."
                 }
             },
             "device": {
