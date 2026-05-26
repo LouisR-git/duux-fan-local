@@ -23,6 +23,7 @@ ATTR_HOR_OSC = "horosc"
 ATTR_VER_OSC = "verosc"
 ATTR_SWING = "swing"
 ATTR_TILT = "tilt"
+ATTR_SETPOINT = "sp"
 # Air purifier attributes
 ATTR_FILTER = "filter"
 ATTR_PPM = "ppm"
@@ -269,6 +270,71 @@ DEVICE_PROFILES = {
                 "icon": "mdi:battery-charging",
             }
         },
+    },
+    "whisper_flex_ultimate": {
+        "name": "Whisper Flex Ultimate",
+        "fan": {
+            "supported_features": ["turn_on", "turn_off", "set_speed"],
+            "max_speed": 30,
+        },
+        "switches": {},
+        "sensors": {},
+        "numbers": {
+            "speed": {
+                "name": "Speed",
+                "command_topic": "tune set speed",
+                "state_key": ATTR_SPEED,
+                "min": 1.0,
+                "max": 30.0,
+                "step": 1.0,
+                "unit": None,
+                "icon": "mdi:speedometer",
+            },
+            "timer": {
+                "name": "Timer",
+                "command_topic": "tune set timer",
+                "state_key": ATTR_TIMER,
+                "min": 0.0,
+                "max": 12.0,
+                "step": 1.0,
+                "unit": "h",
+                "icon": "mdi:timer-outline",
+            },
+            "setpoint": {
+                "name": "Setpoint",
+                "command_topic": "tune set sp",
+                "state_key": ATTR_SETPOINT,
+                "min": 17.0,
+                "max": 28.0,
+                "step": 1.0,
+                "unit": "°C",
+                "icon": "mdi:thermometer",
+            },
+        },
+        "select": {
+            "fan_mode": {
+                "name": "Fan Mode",
+                "command_topic": "tune set mode",
+                "state_key": ATTR_MODE,
+                "options": {"Regular": 0, "Natural": 1, "Night": 2},
+                "icon": "mdi:weather-windy",
+            },
+            "swing": {
+                "name": "Swing",
+                "command_topic": "tune set swing",
+                "state_key": ATTR_SWING,
+                "options": {"Off": 0, "30°": 1, "60°": 2, "90°": 3},
+                "icon": "mdi:arrow-left-right",
+            },
+            "tilt": {
+                "name": "Tilt",
+                "command_topic": "tune set tilt",
+                "state_key": ATTR_TILT,
+                "options": {"Off": 0, "90°": 1, "105°": 2},
+                "icon": "mdi:arrow-up-down",
+            },
+        },
+        "binary_sensors": {},
     },
     "bright_2": {
         "name": "Duux Bright 2",
