@@ -16,6 +16,7 @@ from .const import (
     CONF_DEVICE_ID,
     CONF_MQTT_HOST,
     CONF_MQTT_PORT,
+    CONF_USE_TLS,
     MQTT_HOST,
     MQTT_PORT,
     TOPIC_COMMAND,
@@ -40,8 +41,10 @@ class DuuxMqttClient:
         self._password = config.get(CONF_PASSWORD)
         self._mqtt_host = config.get(CONF_MQTT_HOST, MQTT_HOST)
         self._mqtt_port = config.get(CONF_MQTT_PORT, MQTT_PORT)
+        self._use_tls = config.get(CONF_USE_TLS, True)
         self._callbacks = []
         self._client = mqtt.Client()
+        self._client.reconnect_delay_set(min_delay=5, max_delay=60)
         self._client.on_connect = self.on_connect
         self._client.on_message = self.on_message
 
@@ -52,7 +55,8 @@ class DuuxMqttClient:
         def configure_tls_and_connect():
             if self._username:
                 self._client.username_pw_set(self._username, self._password)
-            self._client.tls_set(cert_reqs=ssl.CERT_NONE)
+            if self._use_tls:
+                self._client.tls_set(cert_reqs=ssl.CERT_NONE)
             self._client.connect(self._mqtt_host, self._mqtt_port, 60)
 
         try:
