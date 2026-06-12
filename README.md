@@ -19,6 +19,7 @@ This integration uses a flexible Device Profile architecture designed to easily 
 **Currently officially supported:**
 - **Duux Whisper Flex** (Fan)
 - **Duux Whisper Flex 2** (Fan)
+- **Duux Whisper Flex Ultimate** (Fan)
 - **Duux Bright 2** (Air Purifier)
 
 
@@ -135,6 +136,18 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 | **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
 | **Battery Level**   | `batlvl` | N/A                 | `0` to `10`                            |
 | **Charging Status** | `batcha` | N/A                 | `0`: not charging , `1`: charging      |
+
+### Whisper Flex Ultimate
+
+| Feature             |   Key    | Command Payload     | Value X=                                          |
+|---------------------|----------|---------------------|---------------------------------------------------|
+| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                                 |
+| **Mode**            | `mode`   | `tune set mode X`   | `0`: regular, `1`: natural, `2`: night            |
+| **Speed**           | `speed`  | `tune set speed X`  | `1` to `30`                                       |
+| **Timer**           | `timer`  | `tune set timer X`  | `0` to `12` hours                                 |
+| **Horizontal Osc.** | `swing`  | `tune set swing X`  | `0`: off, `1`: 30°, `2`: 60°, `3`: 90°           |
+| **Vertical Osc.**   | `tilt`   | `tune set tilt X`   | `0`: off, `1`: 90°, `2`: 105°                    |
+| **Setpoint**        | `sp`     | `tune set sp X`     | `17` to `28` °C                                   |
 
 ### Duux Bright 2
 | Feature             |   Key    | Command Payload     | Value X=                               |
