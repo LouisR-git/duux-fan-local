@@ -79,10 +79,13 @@ You’ll need:
 
 ## Local DNS spoofing
 
-From your local DNS server, redirect the Duux cloud MQTT hostname to your local MQTT server’s IP.
+From your local DNS server, redirect the Duux cloud MQTT hostname(s) to your local MQTT server’s IP:
 ```
 collector3.cloudgarden.nl → 192.168.x.x
+collector.cloudgarden.nl  → 192.168.x.x
 ```
+
+> 💡 **Note:** Some devices or firmware versions query `collector.cloudgarden.nl` instead of `collector3.cloudgarden.nl`. Redirecting both hostnames ensures continuous connectivity.
 
 ### Example: AdGuard DNS rewrite
 
@@ -106,6 +109,15 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 - **Goal:** The quickest option for labs or testing environments.
 - ⚠️ **Security:** Not secure (anonymous access).
 - 📖 See the [Mosquitto installation guide](docs/guide-mosquitto.md)
+
+### Option C - Home Assistant Mosquitto Broker Add-on (Manual TLS + Auth)
+- **Goal:** Reuse your existing official Home Assistant Mosquitto Broker add-on.
+- 📖 See the [HA Mosquitto Broker Add-on guide](docs/guide-ha-mosquitto-addon.md)
+
+### External Community Project — Automated Add-on
+- **Goal:** Automate certificate generation, embedded TLS on port 443, and MQTT Discovery.
+- ⚠️ **Note:** This is an independent, external community project developed by [@BluPix](https://github.com/BluPix):
+  👉 [duux-fan-local-addon](https://github.com/BluPix/duux-fan-local-addon)
 
 
 
@@ -204,6 +216,11 @@ Enjoy full privacy, instant response times, and true independence from proprieta
 
 > **Note:** When connected to your local MQTT, the device will no longer be able to receive firmware updates from the manufacturer.
 > Disable local DNS forwarding and restart your device to access the web again.
+
+## Cloud Alternative
+
+If you prefer using Duux's cloud API rather than setting up local DNS redirection and MQTT brokers, check out Simon Smale's cloud integration:
+👉 [Duux Home Assistant Cloud Integration](https://github.com/SSmale/Duux-Home-Assistant)
 
 ## Credits
 

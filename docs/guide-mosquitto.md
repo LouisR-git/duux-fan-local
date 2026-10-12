@@ -20,7 +20,7 @@ openssl req -x509 -nodes -newkey rsa:2048 \
   -out /etc/mosquitto/certs/collector3.cloudgarden.nl.crt \
   -days 3650 \
   -subj "/CN=collector3.cloudgarden.nl" \
-  -addext "subjectAltName=DNS:collector3.cloudgarden.nl"
+  -addext "subjectAltName=DNS:collector3.cloudgarden.nl,DNS:collector.cloudgarden.nl"
 ```
 
 Then set ownership and permissions :
