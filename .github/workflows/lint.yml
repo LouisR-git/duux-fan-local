@@ -28,11 +28,14 @@ jobs:
         if: github.event_name == 'push'
         run: |
           if [[ `git status --porcelain` ]]; then
-            echo "🔧 pre-commit fixed some files, committing..."
+            echo "🔧 pre-commit fixed some files, attempting to commit..."
             git config --global user.name "github-actions[bot]"
             git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -am "style: auto-fix lint"
-            git push
+            git push || {
+              echo "⚠️ Could not push auto-fixes (branch may be protected). Please run pre-commit locally."
+              exit 1
+            }
           else
             echo "✅ No changes to commit"
           fi
