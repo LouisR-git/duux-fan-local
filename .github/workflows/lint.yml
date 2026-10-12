@@ -25,6 +25,7 @@ jobs:
         run: pre-commit run --all-files --show-diff-on-failure || true
 
       - name: Commit fixes if needed
+        if: github.event_name == 'push'
         run: |
           if [[ `git status --porcelain` ]]; then
             echo "🔧 pre-commit fixed some files, committing..."
@@ -34,4 +35,15 @@ jobs:
             git push
           else
             echo "✅ No changes to commit"
+          fi
+
+      - name: Check formatting on pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            echo "❌ Code style issues found! Please run pre-commit locally."
+            git diff
+            exit 1
+          else
+            echo "✅ Code is cleanly formatted"
           fi
