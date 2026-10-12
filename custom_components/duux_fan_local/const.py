@@ -7,6 +7,7 @@ CONF_DEVICE_ID = "device_id"
 CONF_MODEL = "model"
 CONF_MQTT_HOST = "mqtt_host"
 CONF_MQTT_PORT = "mqtt_port"
+CONF_USE_TLS = "use_tls"
 MANUFACTURER = "Duux"
 
 # Generate MODELS dynamically from DEVICE_PROFILES
