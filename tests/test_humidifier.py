@@ -1,5 +1,5 @@
 """Unit tests for the Duux dehumidifier platform."""
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 from homeassistant.components.humidifier import HumidifierDeviceClass
@@ -127,7 +127,9 @@ async def test_async_setup_entry_with_humidifier(hass, mock_client):
     hass.data = {DOMAIN: {"test_entry": mock_client}}
 
     entities_added = []
-    async_add_entities = MagicMock(side_effect=lambda entities: entities_added.extend(entities))
+    async_add_entities = MagicMock(
+        side_effect=lambda entities: entities_added.extend(entities)
+    )
 
     await async_setup_entry(hass, config_entry, async_add_entities)
 
