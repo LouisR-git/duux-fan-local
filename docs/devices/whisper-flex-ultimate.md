@@ -16,6 +16,6 @@ Local control specifications and supported features for the **Duux Whisper Flex 
 
 ## Home Assistant Entities
 
-- **Fan**: Power on/off, speed (1–30).
+- **Fan**: Power on/off, speed (1-30).
 - **Select**: Fan Mode (`Regular`, `Natural`, `Night`), Swing (`Off`, `30°`, `60°`, `90°`), Tilt (`Off`, `90°`, `105°`).
 - **Number**: Speed (`1` to `30`), Timer (`0` to `12` hours), Setpoint Temperature (`17` to `28` °C).

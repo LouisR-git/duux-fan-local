@@ -18,11 +18,11 @@ This integration uses a flexible Device Profile architecture designed to easily 
 
 | Model | Category | Detailed Specifications |
 |---|---|---|
-| **Duux Whisper Flex** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex.md) |
-| **Duux Whisper Flex 2** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex-2.md) |
-| **Duux Whisper Flex Ultimate** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex-ultimate.md) |
-| **Duux Bright 2** | Air Purifier | [📖 View Features & MQTT Specs](docs/devices/bright-2.md) |
-| **Duux Bora Smart** | Dehumidifier | [📖 View Features & MQTT Specs](docs/devices/bora-smart.md) |
+| **Duux Whisper Flex** | Fan | [View Features & MQTT Specs](docs/devices/whisper-flex.md) |
+| **Duux Whisper Flex 2** | Fan | [View Features & MQTT Specs](docs/devices/whisper-flex-2.md) |
+| **Duux Whisper Flex Ultimate** | Fan | [View Features & MQTT Specs](docs/devices/whisper-flex-ultimate.md) |
+| **Duux Bright 2** | Air Purifier | [View Features & MQTT Specs](docs/devices/bright-2.md) |
+| **Duux Bora Smart** | Dehumidifier | [View Features & MQTT Specs](docs/devices/bora-smart.md) |
 
 
 ### Help expand support
@@ -116,28 +116,10 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 - **Goal:** Reuse your existing official Home Assistant Mosquitto Broker add-on.
 - 📖 See the [HA Mosquitto Broker Add-on guide](docs/guide-ha-mosquitto-addon.md)
 
-### External Community Project — Automated Add-on
+### External Community Project - Automated Add-on
 - **Goal:** Automate certificate generation, embedded TLS on port 443, and MQTT Discovery.
 - ⚠️ **Note:** This is an independent, external community project developed by [@BluPix](https://github.com/BluPix):
   👉 [duux-fan-local-addon](https://github.com/BluPix/duux-fan-local-addon)
-
-
-
-## Supported Features by Device
-
-Each device category and model supports dedicated Home Assistant entities and MQTT commands. Click on a device below to view its full feature and command table:
-
-- 🌀 **[Duux Whisper Flex](docs/devices/whisper-flex.md)** — Fan, speed 1–26, natural wind, night mode, timer, oscillation.
-- 🌀 **[Duux Whisper Flex 2](docs/devices/whisper-flex-2.md)** — Fan, speed 1–30, battery level, charging sensor, 3D oscillation, child lock.
-- 🌀 **[Duux Whisper Flex Ultimate](docs/devices/whisper-flex-ultimate.md)** — Fan, speed 1–30, temperature setpoint, 3D oscillation, preset modes.
-- 🍃 **[Duux Bright 2](docs/devices/bright-2.md)** — Air purifier, speed 1–4, air quality index, PM10, TVOC, filter life, ionizer.
-- 💧 **[Duux Bora Smart](docs/devices/bora-smart.md)** — Dehumidifier, target humidity control (30–80%), continuous/auto mode, water tank full sensor.
-
-### Known Limitations
-
-- **Charging Status (Whisper Flex 2):** Does not update automatically when the battery is fully charged.
-  The device only refreshes this attribute when the Power state changes.
-  This is a **firmware limitation**.
 
 
 ## Details

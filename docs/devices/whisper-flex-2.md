@@ -14,12 +14,12 @@ Local control specifications and supported features for the **Duux Whisper Flex 
 | **Vertical Oscillation** | `verosc` | `tune set verosc X` | `0`: off, `1`: 45°, `2`: 100° |
 | **Night Mode** | `night` | `tune set night X` | `0`: off, `1`: on |
 | **Child Lock** | `lock` | `tune set lock X` | `0`: off, `1`: on |
-| **Battery Level** | `batlvl` | N/A (sensor) | `0` to `10` (mapped to 0–100%) |
+| **Battery Level** | `batlvl` | N/A (sensor) | `0` to `10` (mapped to 0-100%) |
 | **Charging Status** | `batcha` | N/A (binary sensor) | `0`: not charging, `1`: charging |
 
 ## Home Assistant Entities
 
-- **Fan**: Power on/off, speed (1–30), preset modes (`Fan`, `Natural`).
+- **Fan**: Power on/off, speed (1-30), preset modes (`Fan`, `Natural`).
 - **Select**: Horizontal oscillation (`Off`, `30°`, `60°`, `90°`), Vertical oscillation (`Off`, `45°`, `100°`).
 - **Switch**: Night Mode, Child Lock.
 - **Sensor**: Battery Level (%).

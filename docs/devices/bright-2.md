@@ -17,7 +17,7 @@ Local control specifications and supported features for the **Duux Bright 2** ai
 
 ## Home Assistant Entities
 
-- **Fan**: Power on/off, speed (1–4).
+- **Fan**: Power on/off, speed (1-4).
 - **Switch**: Night Mode, ION Setting.
 - **Sensor**: Filter Life (%), PM10 (µg/m³), Air Quality Index (AQI), TVOC (µg/m³).
 - **Number**: Speed (`1` to `4`).
