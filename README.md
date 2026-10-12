@@ -21,6 +21,7 @@ This integration uses a flexible Device Profile architecture designed to easily 
 - **Duux Whisper Flex 2** (Fan)
 - **Duux Whisper Flex Ultimate** (Fan)
 - **Duux Bright 2** (Air Purifier)
+- **Duux Bora Smart** (Dehumidifier)
 
 
 ### Help expand support
@@ -172,6 +173,18 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 | **PPM 10**          | `ppm`    | N/A                 | µg/m³                                  |
 | **Air Quality**     | `AQ`     | N/A                 | AQI value                              |
 | **TVOC**            | `TVOC`   | N/A                 | µg/m³                                  |
+
+### Bora Smart
+| Feature             |   Key    | Command Payload     | Value X=                               |
+|---------------------|----------|---------------------|----------------------------------------|
+| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
+| **Mode**            | `mode`   | `tune set mode X`   | `0`: auto, `1`: continuous             |
+| **Humidity**        | `hum`    | N/A                 | `0` to `100` (%)                       |
+| **Set Humidity**    | `sp`     | `tune set sp X`     | `35` to `80` (%, step 5)               |
+| **Tank full**       | `err`    | N/A                 | `0`: empty, `8`: full                  |
+| **Fan**             | `fan`    | `tune set fan X`    | `1`: Level 1, `0`: Level 2             |
+| **Night Mode**      | `sleep`  | `tune set sleep X`  | `0`: off, `1`: on                      |
+| **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
 
 ### Known Issues
 

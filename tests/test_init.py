@@ -72,3 +72,35 @@ async def test_async_migrate_entry_already_v2(hass):
 
         # Ensure async_update_entry was NEVER called because no migration was needed
         mock_update.assert_not_called()
+
+
+async def test_async_migrate_entry_dehumidifier_model_to_bora_smart(hass):
+    """Test that model 'dehumidifier' is migrated to 'bora_smart'."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        version=2,
+        data={
+            "device_id": "aa:bb:cc:dd",
+            "name": "Dehumidifier",
+            "model": "dehumidifier",
+        },
+    )
+    config_entry.add_to_hass(hass)
+
+    with patch(
+        "homeassistant.config_entries.ConfigEntries.async_update_entry"
+    ) as mock_update:
+
+        def update_mock(entry, data=None, version=None, *args, **kwargs):
+            if data is not None:
+                entry.data = data
+            if version is not None:
+                entry.version = version
+
+        mock_update.side_effect = update_mock
+
+        result = await async_migrate_entry(hass, config_entry)
+
+        assert result is True
+        assert config_entry.data["model"] == "bora_smart"
+        mock_update.assert_called_once()

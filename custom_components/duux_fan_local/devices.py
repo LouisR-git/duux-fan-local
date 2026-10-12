@@ -30,6 +30,11 @@ ATTR_PPM = "ppm"
 ATTR_ION = "ion"
 ATTR_AQ = "AQ"
 ATTR_TVOC = "TVOC"
+# Dehumidifier attributes
+ATTR_HUMIDITY = "hum"
+ATTR_FAN = "fan"
+ATTR_SLEEP = "sleep"
+ATTR_ERROR = "err"
 
 # Schema validation for device profiles
 # This ensures any new models added in the future strictly adhere to the expected format.
@@ -110,8 +115,19 @@ DEVICE_PROFILE_SCHEMA = vol.Schema(
                         vol.Required("state_key"): str,
                         vol.Optional("device_class"): vol.Any(str, None),
                         vol.Optional("icon"): vol.Any(str, None),
+                        vol.Optional("on_value"): int,
                     }
                 )
+            }
+        ),
+        vol.Optional("humidifier"): vol.Schema(
+            {
+                vol.Optional("power_key"): str,
+                vol.Optional("target_humidity_key"): str,
+                vol.Optional("current_humidity_key"): str,
+                vol.Optional("min_humidity"): vol.Any(int, float),
+                vol.Optional("max_humidity"): vol.Any(int, float),
+                vol.Optional("humidity_step"): vol.Any(int, float),
             }
         ),
     }
@@ -412,6 +428,78 @@ DEVICE_PROFILES = {
         },
         "select": {},
         "binary_sensors": {},
+    },
+    "bora_smart": {
+        "name": "Duux Bora Smart",
+        "switches": {
+            "night_mode": {
+                "name": "Night Mode",
+                "command_on": "tune set sleep 1",
+                "command_off": "tune set sleep 0",
+                "state_key": ATTR_SLEEP,
+                "icon": "mdi:weather-night",
+                "entity_category": None,
+            },
+            "child_lock": {
+                "name": "Child Lock",
+                "command_on": "tune set lock 1",
+                "command_off": "tune set lock 0",
+                "state_key": ATTR_CHILD_LOCK,
+                "icon": "mdi:lock",
+                "entity_category": None,
+            },
+        },
+        "humidifier": {
+            "power_key": ATTR_POWER,
+            "target_humidity_key": ATTR_SETPOINT,
+            "current_humidity_key": ATTR_HUMIDITY,
+            "min_humidity": 30,
+            "max_humidity": 80,
+            "humidity_step": 5,
+        },
+        "sensors": {
+            "humidity": {
+                "name": "Humidity",
+                "state_key": ATTR_HUMIDITY,
+                "device_class": "humidity",
+                "state_class": "measurement",
+                "unit": "%",
+                "icon": "mdi:water-percent",
+                "multiplier": 1,
+            },
+        },
+        "numbers": {},
+        "select": {
+            "dehumidifier_mode": {
+                "name": "Mode",
+                "command_topic": "tune set mode",
+                "state_key": ATTR_MODE,
+                "options": {
+                    "Auto": 0,
+                    "Continuous": 1,
+                },
+                "icon": "mdi:air-humidifier",
+            },
+            "fan_speed": {
+                "name": "Fan Speed",
+                "command_topic": "tune set fan",
+                "state_key": ATTR_FAN,
+                "options": {
+                    "Level 1": 1,
+                    "Level 2": 0,
+                },
+                "icon": "mdi:fan",
+            },
+        },
+        "binary_sensors": {
+            "water_tank_full": {
+                "name": "Water Tank Full",
+                "state_key": ATTR_ERROR,
+                "on_value": 8,
+                "device_class": "problem",
+                "icon": "mdi:cup-water",
+            },
+        },
     },
 }
 

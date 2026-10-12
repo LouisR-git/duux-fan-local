@@ -22,6 +22,7 @@ PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.SELECT,
     Platform.BINARY_SENSOR,
+    Platform.HUMIDIFIER,
 ]
 
 
@@ -36,6 +37,10 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
             new_data["model"] = "whisper_flex_2"
 
         hass.config_entries.async_update_entry(config_entry, data=new_data, version=2)
+
+    if config_entry.data.get("model") == "dehumidifier":
+        new_data = {**config_entry.data, "model": "bora_smart"}
+        hass.config_entries.async_update_entry(config_entry, data=new_data)
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
     return True
