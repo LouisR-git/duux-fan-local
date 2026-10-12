@@ -16,12 +16,13 @@ No cloud. No account. No lag.
 
 This integration uses a flexible Device Profile architecture designed to easily embrace the entire Duux product family.
 
-**Currently officially supported:**
-- **Duux Whisper Flex** (Fan)
-- **Duux Whisper Flex 2** (Fan)
-- **Duux Whisper Flex Ultimate** (Fan)
-- **Duux Bright 2** (Air Purifier)
-- **Duux Bora Smart** (Dehumidifier)
+| Model | Category | Detailed Specifications |
+|---|---|---|
+| **Duux Whisper Flex** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex.md) |
+| **Duux Whisper Flex 2** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex-2.md) |
+| **Duux Whisper Flex Ultimate** | Fan | [📖 View Features & MQTT Specs](docs/devices/whisper-flex-ultimate.md) |
+| **Duux Bright 2** | Air Purifier | [📖 View Features & MQTT Specs](docs/devices/bright-2.md) |
+| **Duux Bora Smart** | Dehumidifier | [📖 View Features & MQTT Specs](docs/devices/bora-smart.md) |
 
 
 ### Help expand support
@@ -122,75 +123,21 @@ Unplug → remove the battery (if applicable) → wait ~1 second → reinsert �
 
 
 
-## Supported Features/Models
+## Supported Features by Device
 
-### Whisper Flex
+Each device category and model supports dedicated Home Assistant entities and MQTT commands. Click on a device below to view its full feature and command table:
 
-| Feature             |   Key    | Command Payload    | Value X=                                          |
-|---------------------|----------|--------------------|---------------------------------------------------|
-| **Power**           | `power`  | `tune set power X` | `0`: off, `1`: on                                 |
-| **Mode**            | `mode`   | `tune set mode X`  | `0`: fan mode, `1`: natural wind, `2`: night mode |
-| **Speed**           | `speed`  | `tune set speed X` | `1` to `26`                                       |
-| **Timer**           | `timer`  | `tune set timer X` | `0` to `12` hours                                 |
-| **Horizontal Osc.** | `swing`  | `tune set swing X` | `0`: off, `1`: on                                 |
-| **Vertical Osc.**   | `tilt`   | `tune set tilt X`  | `0`: off, `1`: on                                 |
+- 🌀 **[Duux Whisper Flex](docs/devices/whisper-flex.md)** — Fan, speed 1–26, natural wind, night mode, timer, oscillation.
+- 🌀 **[Duux Whisper Flex 2](docs/devices/whisper-flex-2.md)** — Fan, speed 1–30, battery level, charging sensor, 3D oscillation, child lock.
+- 🌀 **[Duux Whisper Flex Ultimate](docs/devices/whisper-flex-ultimate.md)** — Fan, speed 1–30, temperature setpoint, 3D oscillation, preset modes.
+- 🍃 **[Duux Bright 2](docs/devices/bright-2.md)** — Air purifier, speed 1–4, air quality index, PM10, TVOC, filter life, ionizer.
+- 💧 **[Duux Bora Smart](docs/devices/bora-smart.md)** — Dehumidifier, target humidity control (30–80%), continuous/auto mode, water tank full sensor.
 
+### Known Limitations
 
-### Whisper Flex 2
-| Feature             |   Key    | Command Payload     | Value X=                               |
-|---------------------|----------|---------------------|----------------------------------------|
-| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
-| **Mode**            | `mode`   | `tune set mode X`   | `0`: fan mode, `1`: natural wind       |
-| **Speed**           | `speed`  | `tune set speed X`  | `1` to `30`                            |
-| **Timer**           | `timer`  | `tune set timer X`  | `0` to `12` hours                      |
-| **Horizontal Osc.** | `horosc` | `tune set horosc X` | `0`: off, `1`: 30°, `2`: 60°, `3`: 90° |
-| **Vertical Osc.**   | `verosc` | `tune set verosc X` | `0`: off, `1`: 45°, `2`: 100°          |
-| **Night Mode**      | `night`  | `tune set night X`  | `0`: off, `1`: on                      |
-| **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
-| **Battery Level**   | `batlvl` | N/A                 | `0` to `10`                            |
-| **Charging Status** | `batcha` | N/A                 | `0`: not charging , `1`: charging      |
-
-### Whisper Flex Ultimate
-
-| Feature             |   Key    | Command Payload     | Value X=                                          |
-|---------------------|----------|---------------------|---------------------------------------------------|
-| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                                 |
-| **Mode**            | `mode`   | `tune set mode X`   | `0`: regular, `1`: natural, `2`: night            |
-| **Speed**           | `speed`  | `tune set speed X`  | `1` to `30`                                       |
-| **Timer**           | `timer`  | `tune set timer X`  | `0` to `12` hours                                 |
-| **Horizontal Osc.** | `swing`  | `tune set swing X`  | `0`: off, `1`: 30°, `2`: 60°, `3`: 90°           |
-| **Vertical Osc.**   | `tilt`   | `tune set tilt X`   | `0`: off, `1`: 90°, `2`: 105°                    |
-| **Setpoint**        | `sp`     | `tune set sp X`     | `17` to `28` °C                                   |
-
-### Duux Bright 2
-| Feature             |   Key    | Command Payload     | Value X=                               |
-|---------------------|----------|---------------------|----------------------------------------|
-| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
-| **Night Mode**      | `night`  | `tune set mode X`   | `0`: normal, `1`: night mode           |
-| **Speed**           | `speed`  | `tune set speed X`  | `0` to `4` (0 is auto)                 |
-| **ION Setting**     | `ion`    | `tune set ion X`    | `0`: off, `1`: on                      |
-| **Filter Life**     | `filter` | N/A                 | `0` to `100` (%)                       |
-| **PPM 10**          | `ppm`    | N/A                 | µg/m³                                  |
-| **Air Quality**     | `AQ`     | N/A                 | AQI value                              |
-| **TVOC**            | `TVOC`   | N/A                 | µg/m³                                  |
-
-### Bora Smart
-| Feature             |   Key    | Command Payload     | Value X=                               |
-|---------------------|----------|---------------------|----------------------------------------|
-| **Power**           | `power`  | `tune set power X`  | `0`: off, `1`: on                      |
-| **Mode**            | `mode`   | `tune set mode X`   | `0`: auto, `1`: continuous             |
-| **Humidity**        | `hum`    | N/A                 | `0` to `100` (%)                       |
-| **Set Humidity**    | `sp`     | `tune set sp X`     | `35` to `80` (%, step 5)               |
-| **Tank full**       | `err`    | N/A                 | `0`: empty, `8`: full                  |
-| **Fan**             | `fan`    | `tune set fan X`    | `1`: Level 1, `0`: Level 2             |
-| **Night Mode**      | `sleep`  | `tune set sleep X`  | `0`: off, `1`: on                      |
-| **Child Lock**      | `lock`   | `tune set lock X`   | `0`: off, `1`: on                      |
-
-### Known Issues
-
-- **Charging Status** does not update automatically when the battery is fully charged.
+- **Charging Status (Whisper Flex 2):** Does not update automatically when the battery is fully charged.
   The device only refreshes this attribute when the Power state changes.
-   This is a **firmware limitation**.
+  This is a **firmware limitation**.
 
 
 ## Details
