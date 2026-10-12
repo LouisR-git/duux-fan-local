@@ -10,8 +10,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS
+from .const import DOMAIN
 from .devices import DEVICE_PROFILES
+from .entity import DuuxEntity
 from .mqtt import DuuxMqttClient
 
 
@@ -38,9 +39,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class DuuxSelect(SelectEntity):
-    _attr_should_poll = False
-
+class DuuxSelect(DuuxEntity, SelectEntity):
     def __init__(
         self,
         client: DuuxMqttClient,
@@ -50,10 +49,7 @@ class DuuxSelect(SelectEntity):
         select_id: str,
         details: dict,
     ):
-        self._client = client
-        self._device_id = device_id
-        self._name = base_name
-        self._model = model
+        super().__init__(client, device_id, base_name, model)
         self._select_id = select_id
         self._details = details
 
@@ -65,16 +61,6 @@ class DuuxSelect(SelectEntity):
         self._options_map = details.get("options", {})
         self._attr_options = list(self._options_map.keys())
         self._current_val = None
-
-    @property
-    def device_info(self) -> dict[str, Any]:
-        return {
-            "identifiers": {(DOMAIN, self._device_id)},
-            "name": self._name,
-            "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model, self._model),
-            "connections": {("mac", self._device_id)},
-        }
 
     @property
     def current_option(self) -> str | None:
@@ -89,20 +75,12 @@ class DuuxSelect(SelectEntity):
             val = self._options_map[option]
             cmd = self._details.get("command_topic")
             if cmd:
-                await self.hass.async_add_executor_job(
-                    self._client.publish, f"{cmd} {val}"
-                )
+                await self._async_publish(f"{cmd} {val}")
 
     @callback
-    def _update_state(self, fan_data: dict[str, Any]) -> None:
+    def _update_state(self, device_data: dict[str, Any]) -> None:
         state_key = self._details.get("state_key")
-        val = fan_data.get(state_key)
+        val = device_data.get(state_key)
         if val is not None:
             self._current_val = val
             self.async_write_ha_state()
-
-    async def async_added_to_hass(self) -> None:
-        self._client.register_callback(self._update_state)
-
-    async def async_will_remove_from_hass(self) -> None:
-        self._client.unregister_callback(self._update_state)

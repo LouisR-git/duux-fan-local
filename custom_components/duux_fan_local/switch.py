@@ -10,8 +10,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS
+from .const import DOMAIN
 from .devices import DEVICE_PROFILES
+from .entity import DuuxEntity
 from .mqtt import DuuxMqttClient
 
 
@@ -20,7 +21,7 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Duux Fan switches from a config entry."""
+    """Set up Duux switches from a config entry."""
     client: DuuxMqttClient = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data["device_id"]
     base_name = config_entry.data["name"]
@@ -39,10 +40,8 @@ async def async_setup_entry(
     async_add_entities(switches)
 
 
-class DuuxSwitch(SwitchEntity):
-    """Representation of a Duux Fan switch."""
-
-    _attr_should_poll = False
+class DuuxSwitch(DuuxEntity, SwitchEntity):
+    """Representation of a Duux switch."""
 
     def __init__(
         self,
@@ -54,11 +53,8 @@ class DuuxSwitch(SwitchEntity):
         details: dict[str, Any],
     ) -> None:
         """Initialize the switch."""
-        self._client = client
+        super().__init__(client, device_id, base_name, model)
         self._details = details
-        self._device_id = device_id
-        self._name = base_name
-        self._model = model
         self._switch_id = switch_id
 
         self._attr_name = f"{base_name} {details['name']}"
@@ -68,17 +64,6 @@ class DuuxSwitch(SwitchEntity):
         self._attr_icon = details.get("icon")
         self._attr_entity_category = details.get("entity_category")
 
-    @property
-    def device_info(self) -> dict[str, Any]:
-        """Return device information for grouping in Home Assistant."""
-        return {
-            "identifiers": {(DOMAIN, self._device_id)},
-            "name": self._name,
-            "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model, self._model),
-            "connections": {("mac", self._device_id)},
-        }
-
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
         await self._async_publish(self._details["command_on"])
@@ -87,21 +72,9 @@ class DuuxSwitch(SwitchEntity):
         """Turn the switch off."""
         await self._async_publish(self._details["command_off"])
 
-    async def _async_publish(self, payload: str) -> None:
-        """Publish a command to the MQTT topic."""
-        await self.hass.async_add_executor_job(self._client.publish, payload)
-
     @callback
-    def _update_state(self, fan_data: dict[str, Any]) -> None:
+    def _update_state(self, device_data: dict[str, Any]) -> None:
         """Update the entity's state from parsed MQTT data."""
         state_key = self._details["state_key"]
-        self._attr_is_on = fan_data.get(state_key, 0) > 0
+        self._attr_is_on = device_data.get(state_key, 0) > 0
         self.async_write_ha_state()
-
-    async def async_added_to_hass(self) -> None:
-        """Run when entity is about to be added."""
-        self._client.register_callback(self._update_state)
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Run when entity will be removed."""
-        self._client.unregister_callback(self._update_state)

@@ -2,6 +2,7 @@
 Binary sensor platform for the Duux Fan Local integration.
 Dynamically creates BinarySensorEntities based on the device profile.
 """
+
 import logging
 from typing import Any
 
@@ -13,8 +14,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MANUFACTURER, MODELS
+from .const import DOMAIN
 from .devices import DEVICE_PROFILES
+from .entity import DuuxEntity
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,9 +45,7 @@ async def async_setup_entry(
     async_add_entities(binary_sensors)
 
 
-class DuuxBinarySensor(BinarySensorEntity):
-    _attr_should_poll = False
-
+class DuuxBinarySensor(DuuxEntity, BinarySensorEntity):
     def __init__(
         self,
         client: DuuxMqttClient,
@@ -55,10 +55,7 @@ class DuuxBinarySensor(BinarySensorEntity):
         bs_id: str,
         details: dict,
     ):
-        self._client = client
-        self._device_id = device_id
-        self._name = base_name
-        self._model = model
+        super().__init__(client, device_id, base_name, model)
         self._bs_id = bs_id
         self._details = details
 
@@ -73,26 +70,11 @@ class DuuxBinarySensor(BinarySensorEntity):
 
         self._attr_icon = details.get("icon")
 
-    @property
-    def device_info(self) -> dict[str, Any]:
-        return {
-            "identifiers": {(DOMAIN, self._device_id)},
-            "name": self._name,
-            "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model, self._model),
-            "connections": {("mac", self._device_id)},
-        }
-
     @callback
-    def _update_state(self, fan_data: dict):
+    def _update_state(self, device_data: dict[str, Any]):
         state_key = self._details.get("state_key")
-        val = fan_data.get(state_key)
+        val = device_data.get(state_key)
         if val is not None:
-            self._attr_is_on = val == 1
+            on_value = self._details.get("on_value", 1)
+            self._attr_is_on = val == on_value
             self.async_write_ha_state()
-
-    async def async_added_to_hass(self) -> None:
-        self._client.register_callback(self._update_state)
-
-    async def async_will_remove_from_hass(self) -> None:
-        self._client.unregister_callback(self._update_state)

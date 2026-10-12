@@ -28,8 +28,11 @@ async def test_async_migrate_entry_v1_to_v2(hass):
         "homeassistant.config_entries.ConfigEntries.async_update_entry"
     ) as mock_update:
         # Mock the async_update_entry behavior to actually update the object
-        def update_mock(entry, data, *args, **kwargs):
-            entry.data = data
+        def update_mock(entry, data=None, version=None, *args, **kwargs):
+            if data is not None:
+                entry.data = data
+            if version is not None:
+                entry.version = version
 
         mock_update.side_effect = update_mock
 

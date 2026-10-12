@@ -15,8 +15,9 @@ from homeassistant.util.percentage import (
     ranged_value_to_percentage,
 )
 
-from .const import DOMAIN, MANUFACTURER, MODELS
+from .const import DOMAIN
 from .devices import DEVICE_PROFILES, ATTR_POWER, ATTR_SPEED, ATTR_SWING, ATTR_TILT
+from .entity import DuuxEntity
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,10 +45,8 @@ async def async_setup_entry(
     async_add_entities(fan)
 
 
-class DuuxFan(FanEntity):
+class DuuxFan(DuuxEntity, FanEntity):
     """Representation of a Duux Fan."""
-
-    _attr_should_poll = False
 
     def __init__(
         self,
@@ -58,10 +57,7 @@ class DuuxFan(FanEntity):
         profile: dict,
     ) -> None:
         """Initialize the fan entity."""
-        self._client = client
-        self._name = base_name
-        self._device_id = device_id
-        self._model = model
+        super().__init__(client, device_id, base_name, model)
         self._profile = profile
         self._fan_profile = profile["fan"]
 
@@ -94,17 +90,6 @@ class DuuxFan(FanEntity):
         # Determine keys for power and speed based on profile
         self._power_key = self._fan_profile.get("power_key", ATTR_POWER)
         self._speed_key = self._fan_profile.get("speed_key", ATTR_SPEED)
-
-    @property
-    def device_info(self) -> dict[str, Any]:
-        """Return device info for the entity registry."""
-        return {
-            "identifiers": {(DOMAIN, self._device_id)},
-            "name": self._name,
-            "manufacturer": MANUFACTURER,
-            "model": MODELS.get(self._model, self._model),
-            "connections": {("mac", self._device_id)},
-        }
 
     @property
     def is_on(self) -> bool:
@@ -158,30 +143,18 @@ class DuuxFan(FanEntity):
             tilt_value = 1 if direction == "reverse" else 0
             await self._async_publish(f"tune set tilt {tilt_value}")
 
-    async def _async_publish(self, payload: str) -> None:
-        """Publish a command to the MQTT topic."""
-        await self.hass.async_add_executor_job(self._client.publish, payload)
-
     @callback
-    def _update_state(self, fan_data: dict[str, Any]) -> None:
+    def _update_state(self, device_data: dict[str, Any]) -> None:
         """Update the entity's state from parsed MQTT data."""
-        self._attr_is_on = fan_data.get(self._power_key) == 1
-        self._speed = fan_data.get(self._speed_key, 0)
+        self._attr_is_on = device_data.get(self._power_key) == 1
+        self._speed = device_data.get(self._speed_key, 0)
 
         if "oscillate" in self._fan_profile.get("supported_features", []):
-            self._oscillating = fan_data.get(ATTR_SWING, 0) == 1
+            self._oscillating = device_data.get(ATTR_SWING, 0) == 1
 
         if "direction" in self._fan_profile.get("supported_features", []):
             self._direction = (
-                "reverse" if fan_data.get(ATTR_TILT, 0) == 1 else "forward"
+                "reverse" if device_data.get(ATTR_TILT, 0) == 1 else "forward"
             )
 
         self.async_write_ha_state()
-
-    async def async_added_to_hass(self) -> None:
-        """Run when entity is added to Home Assistant."""
-        self._client.register_callback(self._update_state)
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Run when entity is removed from Home Assistant."""
-        self._client.unregister_callback(self._update_state)

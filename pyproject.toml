@@ -5,5 +5,10 @@ target-version = ["py311"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+
+[tool.ruff.lint]
 select = ["E", "F", "W"]
 ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

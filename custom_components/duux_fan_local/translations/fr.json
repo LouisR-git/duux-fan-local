@@ -2,40 +2,42 @@
     "config": {
         "step": {
             "user": {
-                "title": "Connexion au broker MQTT",
-                "description": "Veuillez saisir les détails de connexion à votre broker MQTT.",
+                "title": "Connexion au courtier MQTT",
+                "description": "Veuillez saisir les informations de connexion à votre courtier MQTT.",
                 "data": {
                     "username": "Nom d'utilisateur MQTT",
                     "password": "Mot de passe MQTT",
                     "mqtt_host": "Hôte MQTT",
-                    "mqtt_port": "Port MQTT"
+                    "mqtt_port": "Port MQTT",
+                    "use_tls": "Utiliser TLS"
                 },
                 "data_description": {
-                    "username": "Laissez vide pour une connexion anonyme.",
-                    "password": "Laissez vide pour une connexion anonyme.",
-                    "mqtt_host": "Laissez par défaut sauf modification nécessaire.",
-                    "mqtt_port": "Laissez par défaut sauf modification nécessaire."
+                    "username": "Laissez vide pour vous connecter anonymement.",
+                    "password": "Laissez vide pour vous connecter anonymement.",
+                    "mqtt_host": "Laissez par défaut sauf si vous devez le modifier.",
+                    "mqtt_port": "Laissez par défaut sauf si vous devez le modifier.",
+                    "use_tls": "Désactivez pour un courtier local sans TLS."
                 }
             },
             "device": {
-                "title": "Ajouter un ventilateur Duux",
+                "title": "Ajouter un appareil Duux",
                 "data": {
-                    "model": "Modèle du ventilateur",
+                    "model": "Modèle d'appareil",
                     "name": "Nom",
                     "device_id": "Identifiant (MAC)"
                 },
                 "data_description": {
-                    "name": "Exemple : Ventilateur Salon",
+                    "name": "Exemple : Ventilateur du salon",
                     "device_id": "Exemple : a1:b2:c3:d4:e5:f6"
                 }
             }
         },
         "error": {
-            "cannot_connect": "Échec de la connexion au ventilateur. Veuillez vous assurer que le ventilateur est allumé, connecté à votre réseau Wi-Fi, et que l'identifiant de l'appareil (adresse MAC) est correct. Vérifier l'état et la connexion du broker MQTT.",
-            "unknown": "Une erreur inconnue est survenue."
+            "cannot_connect": "Échec de connexion à l'appareil. Veuillez vérifier que l'appareil est allumé, connecté à votre réseau Wi-Fi et que son adresse MAC est correcte. Vérifiez également le statut du courtier MQTT.",
+            "unknown": "Une erreur inconnue s'est produite."
         },
         "abort": {
-            "already_configured": "Ce ventilateur Duux est déjà configuré."
+            "already_configured": "Cet appareil Duux est déjà configuré."
         }
     }
 }

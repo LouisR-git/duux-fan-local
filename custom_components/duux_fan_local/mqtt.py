@@ -43,7 +43,12 @@ class DuuxMqttClient:
         self._mqtt_port = config.get(CONF_MQTT_PORT, MQTT_PORT)
         self._use_tls = config.get(CONF_USE_TLS, True)
         self._callbacks = []
-        self._client = mqtt.Client()
+        try:
+            from paho.mqtt.enums import CallbackAPIVersion
+
+            self._client = mqtt.Client(CallbackAPIVersion.VERSION1)
+        except (ImportError, AttributeError):
+            self._client = mqtt.Client()
         self._client.reconnect_delay_set(min_delay=5, max_delay=60)
         self._client.on_connect = self.on_connect
         self._client.on_message = self.on_message
@@ -89,22 +94,22 @@ class DuuxMqttClient:
         try:
             data = json.loads(msg.payload)
             _LOGGER.debug("Received message on %s: %s", msg.topic, data)
-            fan_data = data.get("sub", {}).get("Tune", [{}])[0]
+            device_data = data.get("sub", {}).get("Tune", [{}])[0]
 
             # Some models like Bright 2 nest the payload again under "sub"
             if (
-                isinstance(fan_data, dict)
-                and "sub" in fan_data
-                and "Tune" in fan_data["sub"]
+                isinstance(device_data, dict)
+                and "sub" in device_data
+                and "Tune" in device_data["sub"]
             ):
-                fan_data = fan_data["sub"]["Tune"][0]
+                device_data = device_data["sub"]["Tune"][0]
 
-            if isinstance(fan_data, dict) and fan_data:
+            if isinstance(device_data, dict) and device_data:
                 for update_callback in self._callbacks:
-                    self.hass.add_job(update_callback, fan_data)
+                    self.hass.add_job(update_callback, device_data)
             else:
                 _LOGGER.debug(
-                    "Parsed fan_data is empty or not a dict. Skipping update."
+                    "Parsed device_data is empty or not a dict. Skipping update."
                 )
         except (json.JSONDecodeError, KeyError, IndexError) as e:
             _LOGGER.warning(
