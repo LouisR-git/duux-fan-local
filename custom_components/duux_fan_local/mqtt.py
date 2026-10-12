@@ -3,10 +3,9 @@ MQTT client manager for the Duux Fan Local integration.
 Handles the connection to the custom broker and parses incoming state payloads.
 """
 
+import asyncio
 import json
 import logging
-import ssl
-import asyncio
 
 import paho.mqtt.client as mqtt
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -61,7 +60,7 @@ class DuuxMqttClient:
             if self._username:
                 self._client.username_pw_set(self._username, self._password)
             if self._use_tls:
-                self._client.tls_set(cert_reqs=ssl.CERT_NONE)
+                self._client.tls_set()
             self._client.connect(self._mqtt_host, self._mqtt_port, 60)
 
         try:

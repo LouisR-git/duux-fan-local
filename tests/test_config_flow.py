@@ -5,7 +5,12 @@ from custom_components.duux_fan_local.const import (
     CONF_MODEL,
     CONF_USE_TLS,
 )
-from custom_components.duux_fan_local.config_flow import DuuxFanConfigFlow
+from custom_components.duux_fan_local.config_flow import (
+    DuuxFanConfigFlow,
+    MqttCredentials,
+    test_broker_connection as run_test_broker_connection,
+    test_device_connection as run_test_device_connection,
+)
 
 
 async def test_step_user_success(hass):
@@ -128,3 +133,58 @@ async def test_step_device_skips_device_check_when_no_tls(hass):
         assert result["data"][CONF_USE_TLS] is False
         assert result["data"]["mqtt_port"] == 443
         mock_test_device.assert_not_called()
+
+
+def test_test_broker_connection_tls():
+    """Test test_broker_connection calls tls_set without arguments when use_tls is True."""
+    with patch("paho.mqtt.client.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+        result = run_test_broker_connection("u", "p", "host", 443, use_tls=True)
+        assert result is True
+        mock_client.tls_set.assert_called_once_with()
+        mock_client.connect.assert_called_once_with("host", 443, 60)
+        mock_client.disconnect.assert_called_once()
+
+
+def test_test_broker_connection_no_tls():
+    """Test test_broker_connection skips tls_set when use_tls is False."""
+    with patch("paho.mqtt.client.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+        result = run_test_broker_connection("u", "p", "host", 1883, use_tls=False)
+        assert result is True
+        mock_client.tls_set.assert_not_called()
+        mock_client.connect.assert_called_once_with("host", 1883, 60)
+        mock_client.disconnect.assert_called_once()
+
+
+def test_test_device_connection_tls():
+    """Test test_device_connection calls tls_set without arguments when use_tls is True."""
+    creds = MqttCredentials(device_id="aa:bb", use_tls=True)
+    with patch("paho.mqtt.client.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+
+        def fake_loop_start():
+            mock_client.on_connect(mock_client, None, None, 0)
+            mock_client.on_message(mock_client, None, None)
+
+        mock_client.loop_start.side_effect = fake_loop_start
+
+        result = run_test_device_connection(creds)
+        assert result is True
+        mock_client.tls_set.assert_called_once_with()
+
+
+def test_test_device_connection_no_tls():
+    """Test test_device_connection skips tls_set when use_tls is False."""
+    creds = MqttCredentials(device_id="aa:bb", use_tls=False)
+    with patch("paho.mqtt.client.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+
+        def fake_loop_start():
+            mock_client.on_message(mock_client, None, None)
+
+        mock_client.loop_start.side_effect = fake_loop_start
+
+        result = run_test_device_connection(creds)
+        assert result is True
+        mock_client.tls_set.assert_not_called()

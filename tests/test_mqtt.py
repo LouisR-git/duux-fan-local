@@ -106,3 +106,45 @@ def test_on_message_invalid_payload(hass: HomeAssistant, caplog):
 
     # Ensure no callbacks were registered
     assert mock_callback.call_count == 0
+
+
+async def test_async_connect_with_tls(hass: HomeAssistant):
+    """Test async_connect sets up TLS with system CA verification."""
+    config = {
+        CONF_DEVICE_ID: "aa:bb:cc:dd:ee:ff",
+        "username": "user",
+        "password": "pass",
+        "use_tls": True,
+    }
+    client = DuuxMqttClient(hass, config)
+    with (
+        patch.object(client._client, "tls_set") as mock_tls_set,
+        patch.object(client._client, "username_pw_set") as mock_auth,
+        patch.object(client._client, "connect") as mock_connect,
+        patch.object(client._client, "loop_start") as mock_loop_start,
+    ):
+        await client.async_connect()
+        mock_auth.assert_called_once_with("user", "pass")
+        mock_tls_set.assert_called_once_with()
+        mock_connect.assert_called_once_with("collector3.cloudgarden.nl", 443, 60)
+        mock_loop_start.assert_called_once()
+
+
+async def test_async_connect_without_tls(hass: HomeAssistant):
+    """Test async_connect skips tls_set when use_tls is False."""
+    config = {
+        CONF_DEVICE_ID: "aa:bb:cc:dd:ee:ff",
+        "use_tls": False,
+        "mqtt_host": "192.168.1.100",
+        "mqtt_port": 1883,
+    }
+    client = DuuxMqttClient(hass, config)
+    with (
+        patch.object(client._client, "tls_set") as mock_tls_set,
+        patch.object(client._client, "connect") as mock_connect,
+        patch.object(client._client, "loop_start") as mock_loop_start,
+    ):
+        await client.async_connect()
+        mock_tls_set.assert_not_called()
+        mock_connect.assert_called_once_with("192.168.1.100", 1883, 60)
+        mock_loop_start.assert_called_once()

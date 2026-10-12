@@ -5,7 +5,6 @@ Handles UI setup, discovering devices, and testing the MQTT connection.
 
 from __future__ import annotations
 import logging
-import ssl
 import threading
 from dataclasses import dataclass
 from typing import Any
@@ -47,7 +46,7 @@ def test_broker_connection(
     if username:
         client.username_pw_set(username, password)
     if use_tls:
-        client.tls_set(cert_reqs=ssl.CERT_NONE)
+        client.tls_set()
     try:
         client.connect(host, port, 60)
         client.disconnect()
@@ -98,7 +97,7 @@ def test_device_connection(credentials: MqttCredentials) -> bool:
     client.on_connect = on_connect
     client.on_message = on_message
     if credentials.use_tls:
-        client.tls_set(cert_reqs=ssl.CERT_NONE)
+        client.tls_set()
 
     try:
         client.connect(credentials.host, credentials.port, 60)
