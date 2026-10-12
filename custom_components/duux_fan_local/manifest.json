@@ -13,7 +13,7 @@
     "duux_fan_local"
   ],
   "requirements": [
-    "paho-mqtt==2.1.0"
+    "paho-mqtt>=2.1.0"
   ],
   "version": "2.0.1"
 }
