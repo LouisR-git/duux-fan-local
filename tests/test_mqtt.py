@@ -18,6 +18,20 @@ def test_mqtt_client_initialization(hass: HomeAssistant):
     assert client.device_id == "aa:bb:cc:dd:ee:ff"
     assert client.command_topic == "sensor/aa:bb:cc:dd:ee:ff/command"
     assert client.state_topic == "sensor/aa:bb:cc:dd:ee:ff/in"
+    assert client._use_tls is True
+    assert client._mqtt_port == 443
+
+
+def test_mqtt_client_initialization_with_use_tls_false(hass: HomeAssistant):
+    """Test that the client initializes correctly with use_tls set to False."""
+    config = {
+        CONF_DEVICE_ID: "AA:BB:CC:DD:EE:FF",
+        "use_tls": False,
+    }
+    client = DuuxMqttClient(hass, config)
+    assert client.device_id == "aa:bb:cc:dd:ee:ff"
+    assert client._use_tls is False
+    assert client._mqtt_port == 443
 
 
 def test_on_message_standard_payload(hass: HomeAssistant):

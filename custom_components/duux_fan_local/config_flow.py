@@ -34,7 +34,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def test_broker_connection(
-    username: str | None, password: str | None, host: str, port: int, use_tls: bool = True
+    username: str | None,
+    password: str | None,
+    host: str,
+    port: int,
+    use_tls: bool = True,
 ) -> bool:
     """Test connection to the MQTT broker."""
     import paho.mqtt.client as mqtt

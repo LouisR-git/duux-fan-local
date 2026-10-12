@@ -49,7 +49,7 @@ class DuuxMqttClient:
         self._client.on_message = self.on_message
 
     async def async_connect(self):
-        """Asynchronously configure TLS and connect to the MQTT broker."""
+        """Asynchronously configure connection and connect to the MQTT broker."""
         loop = asyncio.get_running_loop()
 
         def configure_tls_and_connect():
