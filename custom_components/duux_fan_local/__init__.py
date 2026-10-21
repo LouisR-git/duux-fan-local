@@ -7,8 +7,9 @@ from __future__ import annotations
 import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.const import Platform
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import DOMAIN
 from .mqtt import DuuxMqttClient
@@ -52,7 +53,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Create and connect the MQTT client
     client = DuuxMqttClient(hass, entry.data)
-    await client.async_connect()
+    try:
+        await client.async_connect()
+    except OSError as err:
+        raise ConfigEntryNotReady(
+            f"Failed to connect to Duux MQTT broker: {err}"
+        ) from err
 
     hass.data[DOMAIN][entry.entry_id] = client
 

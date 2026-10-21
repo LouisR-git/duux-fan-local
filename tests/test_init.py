@@ -1,9 +1,11 @@
 from unittest.mock import patch
 
+import pytest
+from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.duux_fan_local.const import DOMAIN
-from custom_components.duux_fan_local import async_migrate_entry
+from custom_components.duux_fan_local import async_migrate_entry, async_setup_entry
 
 
 async def test_async_migrate_entry_v1_to_v2(hass):
@@ -104,3 +106,24 @@ async def test_async_migrate_entry_dehumidifier_model_to_bora_smart(hass):
         assert result is True
         assert config_entry.data["model"] == "bora_smart"
         mock_update.assert_called_once()
+
+
+async def test_async_setup_entry_raises_config_entry_not_ready_on_oserror(hass):
+    """Test async_setup_entry raises ConfigEntryNotReady when broker connection fails."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        version=2,
+        data={
+            "device_id": "aa:bb:cc:dd:ee:ff",
+            "name": "Bright 2",
+            "model": "bright_2",
+        },
+    )
+    config_entry.add_to_hass(hass)
+
+    with patch(
+        "custom_components.duux_fan_local.mqtt.DuuxMqttClient.async_connect",
+        side_effect=OSError("Broker unreachable"),
+    ):
+        with pytest.raises(ConfigEntryNotReady):
+            await async_setup_entry(hass, config_entry)

@@ -81,11 +81,14 @@ def test_device_connection(credentials: MqttCredentials) -> bool:
     import paho.mqtt.client as mqtt
 
     connection_event = threading.Event()
+    connection_refused = False
 
     def on_connect(client, userdata, flags, rc):
+        nonlocal connection_refused
         if rc == 0:
             client.subscribe(TOPIC_STATE.format(device_id=credentials.device_id))
         else:
+            connection_refused = True
             connection_event.set()
 
     def on_message(client, userdata, msg):
@@ -105,7 +108,7 @@ def test_device_connection(credentials: MqttCredentials) -> bool:
         connected = connection_event.wait(timeout=MQTT_TIMEOUT)
         client.loop_stop()
         client.disconnect()
-        return connected
+        return connected and not connection_refused
     except (OSError, ConnectionRefusedError) as e:
         _LOGGER.error("MQTT connection error: %s", e)
         return False

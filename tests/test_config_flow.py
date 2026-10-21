@@ -188,3 +188,18 @@ def test_test_device_connection_no_tls():
         result = run_test_device_connection(creds)
         assert result is True
         mock_client.tls_set.assert_not_called()
+
+
+def test_test_device_connection_refused():
+    """Test test_device_connection returns False when broker refuses connection (rc != 0)."""
+    creds = MqttCredentials(device_id="aa:bb", use_tls=True)
+    with patch("paho.mqtt.client.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+
+        def fake_loop_start():
+            mock_client.on_connect(mock_client, None, None, 5)
+
+        mock_client.loop_start.side_effect = fake_loop_start
+
+        result = run_test_device_connection(creds)
+        assert result is False

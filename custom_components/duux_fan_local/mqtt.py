@@ -63,11 +63,8 @@ class DuuxMqttClient:
                 self._client.tls_set()
             self._client.connect(self._mqtt_host, self._mqtt_port, 60)
 
-        try:
-            await loop.run_in_executor(None, configure_tls_and_connect)
-            self._client.loop_start()
-        except (OSError, ConnectionRefusedError) as err:
-            _LOGGER.error("Failed to connect to Duux MQTT broker: %s", err)
+        await loop.run_in_executor(None, configure_tls_and_connect)
+        self._client.loop_start()
 
     def disconnect(self):
         """Disconnect from the MQTT broker."""

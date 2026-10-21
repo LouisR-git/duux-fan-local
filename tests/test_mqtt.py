@@ -148,3 +148,23 @@ async def test_async_connect_without_tls(hass: HomeAssistant):
         mock_tls_set.assert_not_called()
         mock_connect.assert_called_once_with("192.168.1.100", 1883, 60)
         mock_loop_start.assert_called_once()
+
+
+async def test_async_connect_raises_oserror(hass: HomeAssistant):
+    """Test async_connect propagates OSError and does not start loop on failure."""
+    import pytest
+
+    config = {
+        CONF_DEVICE_ID: "aa:bb:cc:dd:ee:ff",
+        "use_tls": False,
+    }
+    client = DuuxMqttClient(hass, config)
+    with (
+        patch.object(
+            client._client, "connect", side_effect=OSError("Connection refused")
+        ),
+        patch.object(client._client, "loop_start") as mock_loop_start,
+    ):
+        with pytest.raises(OSError):
+            await client.async_connect()
+        mock_loop_start.assert_not_called()
