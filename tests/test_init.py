@@ -47,6 +47,7 @@ async def test_async_migrate_entry_v1_to_v2(hass):
         # Ensure default model is added if requested
         assert "model" in config_entry.data
         assert config_entry.data["model"] == "whisper_flex_2"
+        assert config_entry.data["use_tls"] is False
         # Ensure previous data is preserved
         assert config_entry.data["device_id"] == "aa:bb:cc:dd:ee:ff"
         assert config_entry.data["name"] == "My Old Whisper Fan"
@@ -127,3 +128,28 @@ async def test_async_setup_entry_raises_config_entry_not_ready_on_oserror(hass):
     ):
         with pytest.raises(ConfigEntryNotReady):
             await async_setup_entry(hass, config_entry)
+
+
+async def test_async_setup_entry_sets_use_tls_false_when_missing(hass):
+    """Test async_setup_entry sets use_tls to False for legacy entries without use_tls."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        version=2,
+        data={
+            "device_id": "aa:bb:cc:dd:ee:ff",
+            "name": "Living Room Fan",
+            "model": "whisper_flex_2",
+        },
+    )
+    config_entry.add_to_hass(hass)
+
+    with (
+        patch("custom_components.duux_fan_local.mqtt.DuuxMqttClient.async_connect"),
+        patch(
+            "homeassistant.config_entries.ConfigEntries.async_forward_entry_setups",
+            return_value=True,
+        ),
+    ):
+        result = await async_setup_entry(hass, config_entry)
+        assert result is True
+        assert config_entry.data["use_tls"] is False

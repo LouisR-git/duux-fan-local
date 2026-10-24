@@ -11,7 +11,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
-from .const import DOMAIN
+from .const import CONF_USE_TLS, DOMAIN
 from .mqtt import DuuxMqttClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,6 +36,8 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         # Ensure model is set if it was missing in very old entries
         if "model" not in new_data:
             new_data["model"] = "whisper_flex_2"
+        if CONF_USE_TLS not in new_data:
+            new_data[CONF_USE_TLS] = False
 
         hass.config_entries.async_update_entry(config_entry, data=new_data, version=2)
 
@@ -50,6 +52,11 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Duux Fan from a config entry."""
     hass.data.setdefault(DOMAIN, {})
+
+    if CONF_USE_TLS not in entry.data:
+        hass.config_entries.async_update_entry(
+            entry, data={**entry.data, CONF_USE_TLS: False}
+        )
 
     # Create and connect the MQTT client
     client = DuuxMqttClient(hass, entry.data)
