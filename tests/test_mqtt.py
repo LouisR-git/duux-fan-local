@@ -109,7 +109,7 @@ def test_on_message_invalid_payload(hass: HomeAssistant, caplog):
 
 
 async def test_async_connect_with_tls(hass: HomeAssistant):
-    """Test async_connect sets up TLS with system CA verification."""
+    """Test async_connect sets up TLS accepting self-signed certificates."""
     config = {
         CONF_DEVICE_ID: "aa:bb:cc:dd:ee:ff",
         "username": "user",
@@ -118,20 +118,20 @@ async def test_async_connect_with_tls(hass: HomeAssistant):
     }
     client = DuuxMqttClient(hass, config)
     with (
-        patch.object(client._client, "tls_set") as mock_tls_set,
+        patch.object(client._client, "tls_set_context") as mock_tls_set,
         patch.object(client._client, "username_pw_set") as mock_auth,
         patch.object(client._client, "connect") as mock_connect,
         patch.object(client._client, "loop_start") as mock_loop_start,
     ):
         await client.async_connect()
         mock_auth.assert_called_once_with("user", "pass")
-        mock_tls_set.assert_called_once_with()
+        mock_tls_set.assert_called_once()
         mock_connect.assert_called_once_with("collector3.cloudgarden.nl", 443, 60)
         mock_loop_start.assert_called_once()
 
 
 async def test_async_connect_without_tls(hass: HomeAssistant):
-    """Test async_connect skips tls_set when use_tls is False."""
+    """Test async_connect skips tls_set_context when use_tls is False."""
     config = {
         CONF_DEVICE_ID: "aa:bb:cc:dd:ee:ff",
         "use_tls": False,
@@ -140,7 +140,7 @@ async def test_async_connect_without_tls(hass: HomeAssistant):
     }
     client = DuuxMqttClient(hass, config)
     with (
-        patch.object(client._client, "tls_set") as mock_tls_set,
+        patch.object(client._client, "tls_set_context") as mock_tls_set,
         patch.object(client._client, "connect") as mock_connect,
         patch.object(client._client, "loop_start") as mock_loop_start,
     ):

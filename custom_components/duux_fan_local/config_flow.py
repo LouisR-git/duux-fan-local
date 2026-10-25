@@ -15,6 +15,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.data_entry_flow import FlowResult
 
+from .mqtt import create_tls_context
 from .const import (
     DOMAIN,
     CONF_DEVICE_ID,
@@ -46,7 +47,7 @@ def test_broker_connection(
     if username:
         client.username_pw_set(username, password)
     if use_tls:
-        client.tls_set()
+        client.tls_set_context(create_tls_context())
     try:
         client.connect(host, port, 60)
         client.disconnect()
@@ -100,7 +101,7 @@ def test_device_connection(credentials: MqttCredentials) -> bool:
     client.on_connect = on_connect
     client.on_message = on_message
     if credentials.use_tls:
-        client.tls_set()
+        client.tls_set_context(create_tls_context())
 
     try:
         client.connect(credentials.host, credentials.port, 60)

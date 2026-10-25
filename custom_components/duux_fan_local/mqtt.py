@@ -6,6 +6,7 @@ Handles the connection to the custom broker and parses incoming state payloads.
 import asyncio
 import json
 import logging
+import ssl
 
 import paho.mqtt.client as mqtt
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -23,6 +24,18 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def create_tls_context() -> ssl.SSLContext:
+    """Return a TLS context that accepts self-signed certificates.
+
+    The Duux fan talks to a local broker (e.g. EMQX with spoofed DNS) that
+    typically presents a self-signed certificate, so verification is disabled.
+    """
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
 
 
 class DuuxMqttClient:
@@ -60,7 +73,7 @@ class DuuxMqttClient:
             if self._username:
                 self._client.username_pw_set(self._username, self._password)
             if self._use_tls:
-                self._client.tls_set()
+                self._client.tls_set_context(create_tls_context())
             self._client.connect(self._mqtt_host, self._mqtt_port, 60)
 
         await loop.run_in_executor(None, configure_tls_and_connect)
