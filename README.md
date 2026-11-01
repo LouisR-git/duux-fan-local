@@ -23,6 +23,7 @@ This integration uses a flexible Device Profile architecture designed to easily 
 | **Duux Whisper Flex Ultimate** | Fan | [View Features & MQTT Specs](docs/devices/whisper-flex-ultimate.md) |
 | **Duux Bright 2** | Air Purifier | [View Features & MQTT Specs](docs/devices/bright-2.md) |
 | **Duux Bora Smart** | Dehumidifier | [View Features & MQTT Specs](docs/devices/bora-smart.md) |
+| **Duux Edge 2000** | Heater | [View Features & MQTT Specs](docs/devices/edge-2000.md) |
 
 
 ### Help expand support

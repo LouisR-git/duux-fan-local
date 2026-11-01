@@ -35,6 +35,9 @@ ATTR_HUMIDITY = "hum"
 ATTR_FAN = "fan"
 ATTR_SLEEP = "sleep"
 ATTR_ERROR = "err"
+# Heater attributes
+ATTR_TEMPERATURE = "temp"
+ATTR_TIMER_REMAINING = "timRm"
 
 # Schema validation for device profiles
 # This ensures any new models added in the future strictly adhere to the expected format.
@@ -128,6 +131,16 @@ DEVICE_PROFILE_SCHEMA = vol.Schema(
                 vol.Optional("min_humidity"): vol.Any(int, float),
                 vol.Optional("max_humidity"): vol.Any(int, float),
                 vol.Optional("humidity_step"): vol.Any(int, float),
+            }
+        ),
+        vol.Optional("climate"): vol.Schema(
+            {
+                vol.Optional("power_key"): str,
+                vol.Optional("target_temperature_key"): str,
+                vol.Optional("current_temperature_key"): str,
+                vol.Optional("min_temp"): vol.Any(int, float),
+                vol.Optional("max_temp"): vol.Any(int, float),
+                vol.Optional("temp_step"): vol.Any(int, float),
             }
         ),
     }
@@ -500,6 +513,60 @@ DEVICE_PROFILES = {
                 "icon": "mdi:cup-water",
             },
         },
+    },
+    "edge_2000": {
+        "name": "Duux Edge 2000",
+        "climate": {
+            "power_key": ATTR_POWER,
+            "target_temperature_key": ATTR_SETPOINT,
+            "current_temperature_key": ATTR_TEMPERATURE,
+            "min_temp": 5,
+            "max_temp": 36,
+            "temp_step": 1,
+        },
+        "switches": {
+            "night_mode": {
+                "name": "Night Mode",
+                "command_on": "tune set night 1",
+                "command_off": "tune set night 0",
+                "state_key": ATTR_NIGHT_MODE,
+                "icon": "mdi:weather-night",
+                "entity_category": None,
+            },
+            "child_lock": {
+                "name": "Child Lock",
+                "command_on": "tune set lock 1",
+                "command_off": "tune set lock 0",
+                "state_key": ATTR_CHILD_LOCK,
+                "icon": "mdi:lock",
+                "entity_category": None,
+            },
+        },
+        "sensors": {
+            "timer_remaining": {
+                "name": "Timer Remaining",
+                "state_key": ATTR_TIMER_REMAINING,
+                "device_class": "duration",
+                "state_class": None,
+                "unit": "min",
+                "icon": "mdi:timer-sand",
+                "multiplier": 1,
+            },
+        },
+        "numbers": {
+            "timer": {
+                "name": "Timer",
+                "command_topic": "tune set timer",
+                "state_key": ATTR_TIMER,
+                "min": 0.0,
+                "max": 12.0,
+                "step": 1.0,
+                "unit": "h",
+                "icon": "mdi:timer-outline",
+            },
+        },
+        "select": {},
+        "binary_sensors": {},
     },
 }
 
